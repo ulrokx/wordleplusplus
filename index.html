@@ -9,13 +9,13 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <title>Wordle++</title>
-    <script src="index.js" defer></script>
+    <script type="module" src="index.js" defer></script>
   </head>
   <body>
-    <div class="container">
-      <h1 class="wordle-title">Wordle++</h1>
-      <h2>Create New Game</h2>
-      <div class="create-game-wrapper">
+    <div id="container">
+      <h1 id="wordle-title">Wordle++</h1>
+      <div id="create-game-wrapper">
+        <h2>Create New Game</h2>
         <ul>
           <li>
             <label>
@@ -43,9 +43,7 @@
         </ul>
         <button id="start-game-btn">Start New Game</button>
       </div>
-      <div id="game-wrapper">
-
-      </div>
+      <div id="game-wrapper"></div>
     </div>
   </body>
 </html>
