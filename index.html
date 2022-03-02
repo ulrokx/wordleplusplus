@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Wordle++</title>
+    <script src="index.js" defer></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="wordle-title">Wordle++</h1>
+      <h2>Create New Game</h2>
+      <div class="create-game-wrapper">
+        <ul>
+          <li>
+            <label>
+              <span>Word Length</span>
+              <select name="length" id="word-length-select">
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+              </select>
+              <label>
+                <span>Guesses</span>
+                <select name="guesses" id="guesses-select">
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6" selected>6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                </select>
+              </label>
+            </label>
+          </li>
+        </ul>
+        <button id="start-game-btn">Start New Game</button>
+      </div>
+      <div id="game-wrapper">
+
+      </div>
+    </div>
+  </body>
+</html>
