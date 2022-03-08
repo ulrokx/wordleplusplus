@@ -1,3 +1,5 @@
+// https://stackoverflow.com/questions/34944099/how-to-import-a-json-file-in-ecmascript-6
+import words from "./words.js"; 
 const startGameButton =
   document.getElementById("start-game-btn");
 const wordLengthSelect = document.getElementById(
@@ -8,27 +10,25 @@ const createGameWrapper = document.getElementById(
 );
 const guessesSelect = document.getElementById("guesses-select");
 const gameWrapper = document.getElementById("game-wrapper");
-let game;
-let words;
+let game
+// state stores the current letters entered and the current row user is typing on
 const state = {
   entry: [],
   entryRow: 0,
 };
 
-startGameButton.addEventListener("click", async (e) => {
+startGameButton.addEventListener("click", (_) => {
   const length = wordLengthSelect.value;
   const guesses = guessesSelect.value;
-  const {default: lists} = await import("./words.js")
-  words = lists
   console.log(words)
-  game = new Wordle(length, guesses);
-  createGameWrapper.style.display = "none";
-  game.createBoard();
+  game = new Wordle(length, guesses); // creates a new game with the user inputted length and guesses
+  createGameWrapper.style.display = "none"; // hides the create game portion
+  game.createBoard(); //runs method to generate game tiles per length and guesses
 });
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 const randInRange = (min, max) => {
   return Math.random() * (max - min) + min
-}
+} 
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 class Wordle {
@@ -36,8 +36,9 @@ class Wordle {
     // creates a wordle game object with the user inputted word length and guesses
     this.wordLength = length;
     this.guesses = guesses;
-    const idx = parseInt(randInRange(0, words[length].length), 10)
+    const idx = parseInt(randInRange(0, words[length].length), 10) // randomly chosen index
     this.word = words[length][idx]
+    console.log(this.word)
   }
 
   createBoard() {
@@ -51,19 +52,38 @@ class Wordle {
     }
   }
 
-  handleKey(e) {}
+  handleGuess() {
+    const guess = state.entry.join("")
+    if(guess.length != this.wordLength || !words[this.wordLength].includes(guess)) {
+      //word is not long enough or a valid word
+      return
+    }
+    for(let i = 0; i < this.wordLength; i++) {
+      const box = document.getElementById(`r-${state.entryRow}c-${i}`)
+      box.classList.remove("game-box-default")
+      console.log(guess[i], this.word[i])
+      if(guess[i] === this.word[i]) {
+        box.classList.add("game-box-green")
+      } else if(this.word.includes(guess[i])) {
+        box.classList.add("game-box-yellow")
+      } else {
+        box.classList.add("game-box-grey")
+      }
+    }
+    state.entry = []
+    state.entryRow = Math.min(state.entryRow + 1, game.guesses)
 
+  }
   makeBox(c, r) {
     const element = document.createElement("li");
-    element.className += " game-box";
-    element.id = `r-${r}c-${c}`;
-    element.innerText = r + "" + c;
+    element.classList.add("game-box", "game-box-default"); //
+    element.id = `r-${r}c-${c}`; // unique id for each box from row and column
+    // element.innerText = r + "" + c;
     return element;
   }
 }
 
 const handleKeyPress = (e) => {
-  console.log(e.key)
   if (e.repeat) return;
   if (e.key == "Backspace") {
     const toChange = document.getElementById(
@@ -88,9 +108,7 @@ const handleKeyPress = (e) => {
     state.entry.push(e.key);
   }
   if(e.key === "Enter") {
-    state.entry = []
-    state.entryRow = Math.min(state.entryRow + 1, game.guesses)
+    game.handleGuess()
   }
 };
-
 document.addEventListener("keydown", handleKeyPress);
