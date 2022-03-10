@@ -110,6 +110,8 @@ class Wordle {
     return element;
   }
 }
+
+
 const handleKeyPress = (e) => {
   if (e.repeat) return;
   if (e.key == "Backspace") {
