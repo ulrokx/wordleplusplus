@@ -63,6 +63,7 @@ class Wordle {
     ); // randomly chosen index
     this.word = words[length][idx];
     console.log(this.word);
+    document.addEventListener("keydown", handleKeyPress);
   }
 
   createBoard() {
@@ -111,7 +112,6 @@ class Wordle {
   }
 }
 
-
 const handleKeyPress = (e) => {
   if (e.repeat) return;
   if (e.key == "Backspace") {
@@ -140,4 +140,3 @@ const handleKeyPress = (e) => {
     game.handleGuess();
   }
 };
-document.addEventListener("keydown", handleKeyPress);
