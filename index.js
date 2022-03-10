@@ -95,7 +95,7 @@ class Wordle {
       if (guess[i] === this.word[i]) {
         box.classList.add("game-box-green");
       } else if (this.word.includes(guess[i])) {
-        box.classList.add("game-box-yellow");
+        box.classList.add("game-box-yellow");   // problem where if there are multiple of the same letter a false yellow will be returned. (e.x. guess = "pardee" and user inputs cheese, will return g,g,y,y,g,gr)
       } else {
         box.classList.add("game-box-grey");
       }
