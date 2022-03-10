@@ -2,7 +2,6 @@
 Wordle++ for SSW-215
 Richard Kirk, Tyler Reinert, Jeffrey Fitzsimmons, Mateusz Marciniak
 
-test test i am here
 Initialization of board:
 takes user input for length, # of guesses (difficulty to come)
 creates Wordle class instance with user inputted values
@@ -63,7 +62,7 @@ class Wordle {
     ); // randomly chosen index
     this.word = words[length][idx];
     console.log(this.word);
-    document.addEventListener("keydown", handleKeyPress);
+    document.addEventListener("keydown", handleKeyPress); // to prevent errors before game
   }
 
   createBoard() {
