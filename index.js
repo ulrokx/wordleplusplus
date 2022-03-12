@@ -19,32 +19,53 @@ store streak and guesses in localstorage
 */
 // https://stackoverflow.com/questions/34944099/how-to-import-a-json-file-in-ecmascript-6
 import words from "./words.js";
-const startGameButton =
-  document.getElementById("start-game-btn");
-const wordLengthSelect = document.getElementById(
-  "word-length-select"
-);
-const createGameWrapper = document.getElementById(
-  "create-game-wrapper"
-);
-const guessesSelect = document.getElementById("guesses-select");
-const gameWrapper = document.getElementById("game-wrapper");
+const refs = {
+  startGameButton: document.getElementById("start-game-btn"),
+  createGameWrapper: document.getElementById(
+    "create-game-wrapper"
+  ),
+  wordLengthSelect: document.getElementById(
+    "word-length-select"
+  ),
+  guessesSelect: document.getElementById("guesses-select"),
+  gameWrapper: document.getElementById("game-wrapper"),
+  modalContent: document.getElementById("modal-content"),
+  modalWrapper: document.getElementById("modal-wrapper"),
+  modalHeader: document.getElementById("modal-title"),
+  modalAgain: document.getElementById("modal-again"),
+  modalNew: document.getElementById("modal-new"),
+};
 let game;
 // state stores the current letters entered and the current row user is typing on
-
-const state = {
+const initialState = {
   entry: [],
   entryRow: 0,
+  active: false,
+  modalActive: false,
 };
 
-startGameButton.addEventListener("click", (_) => {
-  const length = wordLengthSelect.value;
-  const guesses = guessesSelect.value;
-  console.log(words);
+let state = {
+  entry: [],
+  entryRow: 0,
+  active: false,
+  modalActive: false,
+};
+
+const handleNewGame = (_) => {
+  const length = refs.wordLengthSelect.value;
+  const guesses = refs.guessesSelect.value;
   game = new Wordle(length, guesses); // creates a new game with the user inputted length and guesses
-  createGameWrapper.style.display = "none"; // hides the create game portion
+  refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
   game.createBoard(); //runs method to generate game tiles per length and guesses
-});
+};
+
+const resetGame = (_) => {
+  resetState()
+  refs.modalWrapper.classList.add("hidden");
+  deleteBoard();
+  refs.createGameWrapper.classList.remove("hidden");
+};
+refs.startGameButton.addEventListener("click", handleNewGame);
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 const randInRange = (min, max) => {
   return Math.random() * (max - min) + min;
@@ -62,9 +83,23 @@ class Wordle {
     ); // randomly chosen index
     this.word = words[length][idx];
     console.log(this.word);
+
+    this.letterFreq = this.generateFreq(this.word);
+    //populate letterFreq with counts of each letter
+    state.active = true;
     document.addEventListener("keydown", handleKeyPress); // to prevent errors before game
   }
-
+  generateFreq(word) {
+    const res = {};
+    for (let i = 0; i < word.length; i++) {
+      if (word[i] in res) {
+        res[word[i]] += 1;
+      } else {
+        res[word[i]] = 1;
+      }
+      //populate letterFreq with counts of each letter
+    }
+  }
   createBoard() {
     for (let r = 0; r < this.guesses; r++) {
       const ul = document.createElement("ul");
@@ -72,7 +107,7 @@ class Wordle {
         const box = this.makeBox(c, r);
         ul.appendChild(box);
       }
-      gameWrapper.appendChild(ul);
+      refs.gameWrapper.appendChild(ul);
     }
   }
 
@@ -85,23 +120,51 @@ class Wordle {
       //word is not long enough or a valid word
       return;
     }
+    const seenLetters = {}; // {letter: frequency}
+    let correctLetters = 0;
     for (let i = 0; i < this.wordLength; i++) {
       const box = document.getElementById(
         `r-${state.entryRow}c-${i}`
       );
       box.classList.remove("game-box-default");
-      console.log(guess[i], this.word[i]);
       if (guess[i] === this.word[i]) {
         box.classList.add("game-box-green");
+        if (guess[i] in seenLetters) {
+          seenLetters[guess[i]] += 1;
+        } else {
+          seenLetters[guess[i]] = 1;
+        }
+        correctLetters++;
       } else if (this.word.includes(guess[i])) {
-        box.classList.add("game-box-yellow");   // problem where if there are multiple of the same letter a false yellow will be returned. (e.x. guess = "pardee" and user inputs cheese, will return g,g,y,y,g,gr)
+        if (
+          guess[i] in seenLetters &&
+          seenLetters[guess[i]] < this.letterFreq[guess[i]]
+        ) {
+          box.classList.add("game-box-yellow");
+          seenLetters[guess[i]] += 1;
+        } else if (guess[i] in seenLetters) {
+          box.classList.add("game-box-grey");
+        } else {
+          seenLetters[guess[i]] = 1;
+          box.classList.add("game-box-yellow");
+        }
       } else {
         box.classList.add("game-box-grey");
       }
     }
     state.entry = [];
-    state.entryRow = Math.min(state.entryRow + 1, game.guesses);
+    if (correctLetters == this.wordLength) {
+      showModal(true);
+    } else if (state.entryRow + 1 == game.guesses) {
+      showModal(false);
+    } else {
+      state.entryRow = Math.min(
+        state.entryRow + 1,
+        game.guesses
+      );
+    }
   }
+
   makeBox(c, r) {
     const element = document.createElement("li");
     element.classList.add("game-box", "game-box-default"); //
@@ -112,6 +175,7 @@ class Wordle {
 }
 
 const handleKeyPress = (e) => {
+  if (!state.active) return;
   if (e.repeat) return;
   if (e.key == "Backspace") {
     const toChange = document.getElementById(
@@ -139,3 +203,28 @@ const handleKeyPress = (e) => {
     game.handleGuess();
   }
 };
+
+const showModal = (win) => {
+  state.active = false;
+  state.modalActive = true;
+  refs.modalWrapper.classList.remove("hidden");
+  // refs.resultModalWrapper.children[0].textContent = "yoyoyo"
+  refs.modalHeader.textContent = win ? "Victory" : "You Lost";
+};
+
+
+refs.modalNew.addEventListener("click", resetGame);
+refs.modalAgain.addEventListener("click", () => {
+  refs.modalWrapper.classList.add("hidden")
+  deleteBoard()
+  resetState();
+  handleNewGame()});
+
+const resetState = () => {
+  //forgive me but it works
+  state = JSON.parse(JSON.stringify(initialState));
+}
+
+const deleteBoard = () => {
+  refs.gameWrapper.replaceChildren([])
+}
