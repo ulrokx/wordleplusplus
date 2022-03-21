@@ -19,6 +19,7 @@ store streak and guesses in localstorage
 */
 // https://stackoverflow.com/questions/34944099/how-to-import-a-json-file-in-ecmascript-6
 import words from "./words.js";
+import Timer from "./timer.js";
 const refs = {
   // this is better than a bunch of global variables with long names + intellisense
   startGameButton: document.getElementById("start-game-btn"),
@@ -62,10 +63,15 @@ let state = {
 };
 
 const handleNewGame = (_) => {
-  const length = refs.wordLengthSelect.value;
+  const wordLength = refs.wordLengthSelect.value;
   const guesses = refs.guessesSelect.value;
   const difficulty = refs.difficultySelect.value - 1;
-  game = new Wordle(length, guesses, difficulty); // creates a new game with the user inputted length and guesses
+  if(game) {
+  document.removeEventListener(
+    "keydown",
+    game.handleKeyPress
+  )}
+  game = new Wordle({ wordLength, guesses, difficulty, timed: true }); // creates a new game with the user inputted length and guesses
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard();
@@ -80,34 +86,54 @@ const resetGame = (_) => {
 refs.startGameButton.addEventListener("click", handleNewGame);
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 const randInRange = (min, max) => {
-  console.log(min, max)
+  console.log(min, max);
   return Math.random() * (max - min) + min;
 };
-
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 class Wordle {
-  constructor(length, guesses, difficulty) {
+  constructor(options) {
     // creates a wordle game object with the user inputted word length and guesses
-    this.wordLength = length;
-    this.guesses = guesses;
-    this.difficulty = difficulty;
+    // this.wordLength = length;
+    // this.guesses = guesses;
+    // this.difficulty = difficulty;
+    Object.assign(this, options);
+    if (options.timed) {
+      this.timer = new Timer();
+      this.timer.start();
+      this.intervalRef = setInterval(() => this.updateTimer(), 100);
+    }
     const idx = parseInt(
-      randInRange( // in range of | | | | |*| |, finds left and right walls
-        words[length].length * (difficulty / DIFFICULTY_LEVELS),
-        words[length].length * (difficulty / DIFFICULTY_LEVELS) +
-          words[length].length / DIFFICULTY_LEVELS
+      randInRange(
+        // in range of | | | | |*| |, finds left and right walls
+        words[this.wordLength].length *
+          (this.difficulty / DIFFICULTY_LEVELS),
+        words[this.wordLength].length *
+          (this.difficulty / DIFFICULTY_LEVELS) +
+          words[this.wordLength].length / DIFFICULTY_LEVELS
       ),
       10
     ); // randomly chosen index
     this.word =
-      words[length][Math.min(idx, words[length].length - 1)];
+      words[this.wordLength][
+        Math.min(idx, words[this.wordLength].length - 1)
+      ];
     console.log(this.word);
 
     this.letterFreq = this.generateFreq(this.word);
     //populate letterFreq with counts of each letter
     state.active = true;
     this.letterStatus = {};
-    document.addEventListener("keydown", handleKeyPress); // to prevent errors before game
+    this.entry = [];
+    this.entryRow = 0;
+    document.addEventListener("keydown", this.handleKeyPress); // to prevent errors before game
+  }
+  updateTimer() {
+    console.log(this.timer.getTime())
+  }
+
+  stopTiming() {
+    this.timer.stop();
+    clearInterval(this.intervalRef)
   }
   generateFreq(word) {
     const res = {};
@@ -131,10 +157,41 @@ class Wordle {
       refs.gameWrapper.appendChild(ul);
     }
   }
+  handleKeyPress = (e) => {
+    console.log(e);
+    if (!state.active) return; // if game is not in progress do nothing
+    if (e.repeat) return; // if the letter is being held down do nothing
+    if (e.key === "Backspace" || e.key === "BACK") {
+      // if it is a backspace
+      const toChange = document.getElementById(
+        `r-${this.entryRow}c-${
+          this.entry.length > 0 ? this.entry.length - 1 : 0
+        }` // handles if backspace is pushed on first box ^
+      );
+      toChange.innerText = "";
+      this.entry.pop();
+      return;
+    }
+    if (
+      this.entry.length < this.wordLength && // game has space for word
+      e.key.length == 1 && // key is a letter
+      e.key.toUpperCase().charCodeAt(0) >= 65 && // more validation
+      e.key.toUpperCase().charCodeAt(0) <= 90
+    ) {
+      const toChange = document.getElementById(
+        `r-${this.entryRow}c-${this.entry.length}`
+      );
+      toChange.innerText = e.key.toUpperCase();
+      this.entry.push(e.key);
+    }
+    if (e.key === "Enter" || e.key === "ENTER") {
+      this.handleGuess();
+    }
+  };
 
   handleGuess() {
     // handles any time user clicks enter
-    const guess = state.entry.join("");
+    const guess = this.entry.join("");
     if (
       guess.length != this.wordLength ||
       !words[this.wordLength].includes(guess)
@@ -146,7 +203,7 @@ class Wordle {
     let correctLetters = 0;
     for (let i = 0; i < this.wordLength; i++) {
       const box = document.getElementById(
-        `r-${state.entryRow}c-${i}`
+        `r-${this.entryRow}c-${i}`
       ); // gets the each box on the row
       box.classList.remove("game-box-default");
       if (guess[i] === this.word[i]) {
@@ -185,18 +242,19 @@ class Wordle {
         box.classList.add("game-box-grey");
       }
     }
-    state.entry = []; // resets the entry array for the state
+    this.entry = []; // resets the entry array for the state
     if (correctLetters == this.wordLength) {
       // if the user got all of the letters correct
       showModal(true);
-    } else if (state.entryRow + 1 == game.guesses) {
+      state.active = false;
+      this.stopTiming()
+      console.log(this.timer.getTime())
+
+    } else if (this.entryRow + 1 == game.guesses) {
       showModal(false);
     } else {
       // go to the next row without going over, might be unnecessary
-      state.entryRow = Math.min(
-        state.entryRow + 1,
-        game.guesses
-      );
+      this.entryRow = Math.min(this.entryRow + 1, this.guesses);
     }
   }
 
@@ -254,36 +312,10 @@ class Wordle {
     return element;
   }
 }
-const handleKeyPress = (e) => {
-  if (!state.active) return; // if game is not in progress do nothing
-  if (e.repeat) return; // if the letter is being held down do nothing
-  if (e.key === "Backspace" || e.key === "BACK") {
-    // if it is a backspace
-    const toChange = document.getElementById(
-      `r-${state.entryRow}c-${
-        state.entry.length > 0 ? state.entry.length - 1 : 0
-      }` // handles if backspace is pushed on first box ^
-    );
-    toChange.innerText = "";
-    state.entry.pop();
-    return;
-  }
-  if (
-    state.entry.length < game.wordLength && // game has space for word
-    e.key.length == 1 && // key is a letter
-    e.key.toUpperCase().charCodeAt(0) >= 65 && // more validation
-    e.key.toUpperCase().charCodeAt(0) <= 90
-  ) {
-    const toChange = document.getElementById(
-      `r-${state.entryRow}c-${state.entry.length}`
-    );
-    toChange.innerText = e.key.toUpperCase();
-    state.entry.push(e.key);
-  }
-  if (e.key === "Enter" || e.key === "ENTER") {
-    game.handleGuess();
-  }
-};
+
+const updateTimer = () => {
+  console.log(game.timer.getTime())
+}
 
 const showModal = (win) => {
   state.active = false;
