@@ -34,7 +34,13 @@ const refs = {
   modalHeader: document.getElementById("modal-title"),
   modalAgain: document.getElementById("modal-again"),
   modalNew: document.getElementById("modal-new"),
+  keyboardWrapper: document.getElementById("kb-wrapper"),
 };
+const keyboard = [
+  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "back"],
+  ["a", "s", "d", "f", "g", "h", "j", "k", "l", "enter"],
+  ["z", "x", "c", "v", "b", "n", "m"],
+];
 let game;
 // state stores the current letters entered and the current row user is typing on
 const initialState = {
@@ -57,10 +63,11 @@ const handleNewGame = (_) => {
   game = new Wordle(length, guesses); // creates a new game with the user inputted length and guesses
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
   game.createBoard(); //runs method to generate game tiles per length and guesses
+  game.makeKeyboard();
 };
 
 const resetGame = (_) => {
-  resetState()
+  resetState();
   refs.modalWrapper.classList.add("hidden");
   deleteBoard();
   refs.createGameWrapper.classList.remove("hidden");
@@ -87,6 +94,7 @@ class Wordle {
     this.letterFreq = this.generateFreq(this.word);
     //populate letterFreq with counts of each letter
     state.active = true;
+    this.letterStatus = {};
     document.addEventListener("keydown", handleKeyPress); // to prevent errors before game
   }
   generateFreq(word) {
@@ -99,6 +107,7 @@ class Wordle {
       }
       //populate letterFreq with counts of each letter
     }
+    return res;
   }
   createBoard() {
     for (let r = 0; r < this.guesses; r++) {
@@ -129,6 +138,7 @@ class Wordle {
       box.classList.remove("game-box-default");
       if (guess[i] === this.word[i]) {
         box.classList.add("game-box-green");
+        this.updateKeyboard(guess[i], "green")
         if (guess[i] in seenLetters) {
           seenLetters[guess[i]] += 1;
         } else {
@@ -138,17 +148,21 @@ class Wordle {
       } else if (this.word.includes(guess[i])) {
         if (
           guess[i] in seenLetters &&
+          guess[i] in this.letterFreq &&
           seenLetters[guess[i]] < this.letterFreq[guess[i]]
         ) {
           box.classList.add("game-box-yellow");
+          this.updateKeyboard(guess[i], "yellow")
           seenLetters[guess[i]] += 1;
         } else if (guess[i] in seenLetters) {
           box.classList.add("game-box-grey");
         } else {
           seenLetters[guess[i]] = 1;
           box.classList.add("game-box-yellow");
+          this.updateKeyboard(guess[i], "yellow")
         }
       } else {
+        this.updateKeyboard(guess[i], "grey")
         box.classList.add("game-box-grey");
       }
     }
@@ -172,8 +186,43 @@ class Wordle {
     // element.innerText = r + "" + c;
     return element;
   }
-}
 
+  makeKeyboard() {
+    for (let i = 0; i < keyboard.length; ++i) {
+      const ul = document.createElement("ul");
+      ul.classList.add(`kb-row-${i}`);
+      for (let v of keyboard[i]) {
+        const li = document.createElement("li");
+        li.appendChild(this.makeKey(v));
+        ul.appendChild(li);
+      }
+      refs.keyboardWrapper.appendChild(ul);
+    }
+  }
+
+  updateKeyboard(letter, color) {
+    if(letter in this.letterStatus && this.letterStatus[letter] == "green") return
+    this.letterStatus[letter] = color
+    const key = document.getElementById(`kb-${letter}`);
+    key.classList.remove(
+      "game-box-yellow",
+      "game-box-grey",
+      "game-box-default",
+      "game-box-green"
+    );
+    console.log(letter, color)
+    key.classList.add(`game-box-${color}`);
+    console.log(key.classList)
+  }
+
+  makeKey(key) {
+    const element = document.createElement("button");
+    element.id = `kb-${key}`;
+    element.classList.add("kb-key");
+    element.textContent = key.toUpperCase();
+    return element;
+  }
+}
 const handleKeyPress = (e) => {
   if (!state.active) return;
   if (e.repeat) return;
@@ -212,19 +261,20 @@ const showModal = (win) => {
   refs.modalHeader.textContent = win ? "Victory" : "You Lost";
 };
 
-
 refs.modalNew.addEventListener("click", resetGame);
 refs.modalAgain.addEventListener("click", () => {
-  refs.modalWrapper.classList.add("hidden")
-  deleteBoard()
+  refs.modalWrapper.classList.add("hidden");
+  deleteBoard();
   resetState();
-  handleNewGame()});
+  handleNewGame();
+});
 
 const resetState = () => {
   //forgive me but it works
   state = JSON.parse(JSON.stringify(initialState));
-}
+};
 
 const deleteBoard = () => {
-  refs.gameWrapper.replaceChildren([])
-}
+  refs.gameWrapper.replaceChildren([]);
+  refs.keyboardWrapper.replaceChildren([]);
+};
