@@ -104,9 +104,10 @@ button {
 }
 
 #kb-wrapper > * {
-  gap: .25rem;
+  gap: 0.25rem;
 }
 /* KEYBOARD */
+/* i think this is the most elegant way to do this, it works */
 .kb-row-0 {
   display: grid;
   grid-template-columns: repeat(10, var(--kb-btn-width)) 1fr;
@@ -130,4 +131,8 @@ button {
   border-radius: 1rem;
   align-content: center;
   height: var(--kb-btn-height);
+}
+
+button:hover { /* i don't know if i like this */
+  filter: brightness(0.95);
 }
