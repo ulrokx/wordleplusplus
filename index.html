@@ -16,30 +16,40 @@
       <h1 id="wordle-title">Wordle++</h1>
       <div id="create-game-wrapper">
         <h2>Create New Game</h2>
-        <ul>
-          <li>
-            <label>
-              <span>Word Length</span>
-              <select name="length" id="word-length-select">
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5" selected>5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-              </select>
-              <label>
-                <span>Guesses</span>
-                <select name="guesses" id="guesses-select">
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6" selected>6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                </select>
-              </label>
-            </label>
-          </li>
+        <ul id="create-game-ul">
+          <label>
+            <span>Word Length</span>
+            <select name="length" id="word-length-select">
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5" selected>5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+            </select>
+          </label>
+          <label>
+            <span>Guesses</span>
+            <select name="guesses" id="guesses-select">
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6" selected>6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+          </label>
+          <label>
+            <span>Difficulty</span>
+            <select name="difficulty" id="difficulty-select">
+              <option value="1">Very Easy</option>
+              <option value="2">Easy</option>
+              <option value="3">Less Easy</option>
+              <option value="4">Moderate</option>
+              <option value="5">More Difficult</option>
+              <option value="6">Most Difficult</option>
+              <option value="7">Impossible</option>
+            </select>
+          </label>
         </ul>
         <button id="start-game-btn">Start New Game</button>
       </div>

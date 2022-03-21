@@ -19,7 +19,8 @@ store streak and guesses in localstorage
 */
 // https://stackoverflow.com/questions/34944099/how-to-import-a-json-file-in-ecmascript-6
 import words from "./words.js";
-const refs = { // this is better than a bunch of global variables with long names + intellisense
+const refs = {
+  // this is better than a bunch of global variables with long names + intellisense
   startGameButton: document.getElementById("start-game-btn"),
   createGameWrapper: document.getElementById(
     "create-game-wrapper"
@@ -28,6 +29,7 @@ const refs = { // this is better than a bunch of global variables with long name
     "word-length-select"
   ),
   guessesSelect: document.getElementById("guesses-select"),
+  difficultySelect: document.getElementById("difficulty-select"),
   gameWrapper: document.getElementById("game-wrapper"),
   modalContent: document.getElementById("modal-content"),
   modalWrapper: document.getElementById("modal-wrapper"),
@@ -36,7 +38,9 @@ const refs = { // this is better than a bunch of global variables with long name
   modalNew: document.getElementById("modal-new"),
   keyboardWrapper: document.getElementById("kb-wrapper"),
 };
-const keyboard = [ // keyboard buttons
+const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
+const keyboard = [
+  // keyboard buttons
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "back"],
   ["a", "s", "d", "f", "g", "h", "j", "k", "l", "enter"],
   ["z", "x", "c", "v", "b", "n", "m"],
@@ -60,7 +64,8 @@ let state = {
 const handleNewGame = (_) => {
   const length = refs.wordLengthSelect.value;
   const guesses = refs.guessesSelect.value;
-  game = new Wordle(length, guesses); // creates a new game with the user inputted length and guesses
+  const difficulty = refs.difficultySelect.value - 1;
+  game = new Wordle(length, guesses, difficulty); // creates a new game with the user inputted length and guesses
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard();
@@ -75,20 +80,27 @@ const resetGame = (_) => {
 refs.startGameButton.addEventListener("click", handleNewGame);
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 const randInRange = (min, max) => {
+  console.log(min, max)
   return Math.random() * (max - min) + min;
 };
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 class Wordle {
-  constructor(length, guesses) {
+  constructor(length, guesses, difficulty) {
     // creates a wordle game object with the user inputted word length and guesses
     this.wordLength = length;
     this.guesses = guesses;
+    this.difficulty = difficulty;
     const idx = parseInt(
-      randInRange(0, words[length].length),
+      randInRange( // in range of | | | | |*| |, finds left and right walls
+        words[length].length * (difficulty / DIFFICULTY_LEVELS),
+        words[length].length * (difficulty / DIFFICULTY_LEVELS) +
+          words[length].length / DIFFICULTY_LEVELS
+      ),
       10
     ); // randomly chosen index
-    this.word = words[length][idx];
+    this.word =
+      words[length][Math.min(idx, words[length].length - 1)];
     console.log(this.word);
 
     this.letterFreq = this.generateFreq(this.word);
@@ -120,9 +132,10 @@ class Wordle {
     }
   }
 
-  handleGuess() { // handles any time user clicks enter
+  handleGuess() {
+    // handles any time user clicks enter
     const guess = state.entry.join("");
-    if ( 
+    if (
       guess.length != this.wordLength ||
       !words[this.wordLength].includes(guess)
     ) {
@@ -136,43 +149,50 @@ class Wordle {
         `r-${state.entryRow}c-${i}`
       ); // gets the each box on the row
       box.classList.remove("game-box-default");
-      if (guess[i] === this.word[i]) { // case when the letter is correct
+      if (guess[i] === this.word[i]) {
+        // case when the letter is correct
         box.classList.add("game-box-green");
-        this.updateKeyboard(guess[i], "green")
+        this.updateKeyboard(guess[i], "green");
         if (guess[i] in seenLetters) {
           seenLetters[guess[i]] += 1;
         } else {
           seenLetters[guess[i]] = 1;
         }
         correctLetters++;
-      } else if (this.word.includes(guess[i])) { // case when letter is in word
-        if ( // if the letter is both in the correct word and it has been seen less than
-        //      the number of times it appears in the correct word
+      } else if (this.word.includes(guess[i])) {
+        // case when letter is in word
+        if (
+          // if the letter is both in the correct word and it has been seen less than
+          //      the number of times it appears in the correct word
           guess[i] in seenLetters &&
           guess[i] in this.letterFreq &&
           seenLetters[guess[i]] < this.letterFreq[guess[i]]
         ) {
           box.classList.add("game-box-yellow");
-          this.updateKeyboard(guess[i], "yellow")
+          this.updateKeyboard(guess[i], "yellow");
           seenLetters[guess[i]] += 1; // add one to the seen count for that letter
-        } else if (guess[i] in seenLetters) { // if it has been seen enough
+        } else if (guess[i] in seenLetters) {
+          // if it has been seen enough
           box.classList.add("game-box-grey");
         } else {
           seenLetters[guess[i]] = 1;
           box.classList.add("game-box-yellow");
-          this.updateKeyboard(guess[i], "yellow")
+          this.updateKeyboard(guess[i], "yellow");
         }
-      } else { // wrong letter
-        this.updateKeyboard(guess[i], "grey")
+      } else {
+        // wrong letter
+        this.updateKeyboard(guess[i], "grey");
         box.classList.add("game-box-grey");
       }
     }
     state.entry = []; // resets the entry array for the state
-    if (correctLetters == this.wordLength) { // if the user got all of the letters correct
+    if (correctLetters == this.wordLength) {
+      // if the user got all of the letters correct
       showModal(true);
     } else if (state.entryRow + 1 == game.guesses) {
       showModal(false);
-    } else { // go to the next row without going over, might be unnecessary
+    } else {
+      // go to the next row without going over, might be unnecessary
       state.entryRow = Math.min(
         state.entryRow + 1,
         game.guesses
@@ -180,7 +200,8 @@ class Wordle {
     }
   }
 
-  makeBox(c, r) { // factory for making a game box with a specific id
+  makeBox(c, r) {
+    // factory for making a game box with a specific id
     const element = document.createElement("li");
     element.classList.add("game-box", "game-box-default"); //
     element.id = `r-${r}c-${c}`; // unique id for each box from row and column
@@ -188,12 +209,17 @@ class Wordle {
     return element;
   }
 
-
-  updateKeyboard(letter, color) { // updates the keyboard, handles if the key is already green
-    if(letter in this.letterStatus && this.letterStatus[letter] == "green") return
-    this.letterStatus[letter] = color
+  updateKeyboard(letter, color) {
+    // updates the keyboard, handles if the key is already green
+    if (
+      letter in this.letterStatus &&
+      this.letterStatus[letter] == "green"
+    )
+      return;
+    this.letterStatus[letter] = color;
     const key = document.getElementById(`kb-${letter}`);
-    key.classList.remove( // better safe than sorry, easiest way to do this i think
+    key.classList.remove(
+      // better safe than sorry, easiest way to do this i think
       "game-box-yellow",
       "game-box-grey",
       "game-box-default",
@@ -202,7 +228,8 @@ class Wordle {
     key.classList.add(`game-box-${color}`);
   }
 
-  makeKeyboard() { // constructs the keyboard each game as 3 lists of buttons
+  makeKeyboard() {
+    // constructs the keyboard each game as 3 lists of buttons
     for (let i = 0; i < keyboard.length; ++i) {
       const ul = document.createElement("ul");
       ul.classList.add(`kb-row-${i}`);
@@ -215,19 +242,23 @@ class Wordle {
     }
   }
 
-  makeKey(key) { // factory for each key
+  makeKey(key) {
+    // factory for each key
     const element = document.createElement("button");
     element.id = `kb-${key}`;
     element.classList.add("kb-key");
     element.textContent = key.toUpperCase(); // below is kinda bad but it works
-    element.addEventListener("click", (e) => handleKeyPress({key: e.target.textContent}))
+    element.addEventListener("click", (e) =>
+      handleKeyPress({ key: e.target.textContent })
+    );
     return element;
   }
 }
 const handleKeyPress = (e) => {
   if (!state.active) return; // if game is not in progress do nothing
   if (e.repeat) return; // if the letter is being held down do nothing
-  if (e.key === "Backspace" || e.key === "BACK") { // if it is a backspace
+  if (e.key === "Backspace" || e.key === "BACK") {
+    // if it is a backspace
     const toChange = document.getElementById(
       `r-${state.entryRow}c-${
         state.entry.length > 0 ? state.entry.length - 1 : 0
@@ -259,7 +290,7 @@ const showModal = (win) => {
   state.modalActive = true;
   refs.modalWrapper.classList.remove("hidden");
   // should be able to reuse most of this with some small modifications
-  refs.modalHeader.textContent = win ? "Victory" : "You Lost"; 
+  refs.modalHeader.textContent = win ? "Victory" : "You Lost";
 };
 
 refs.modalNew.addEventListener("click", resetGame);

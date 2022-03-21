@@ -35,6 +35,19 @@ ol {
   align-items: center;
 }
 
+#create-game-ul {
+  display: flex;
+  flex-direction: column;
+  row-gap: .5rem;
+}
+
+#create-game-ul>* {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  column-gap: 2rem;
+}
+
 .hidden {
   display: none !important;
 }
