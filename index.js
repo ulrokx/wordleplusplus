@@ -225,7 +225,6 @@ class Wordle {
   }
 }
 const handleKeyPress = (e) => {
-  console.log(e)
   if (!state.active) return; // if game is not in progress do nothing
   if (e.repeat) return; // if the letter is being held down do nothing
   if (e.key === "Backspace" || e.key === "BACK") { // if it is a backspace
