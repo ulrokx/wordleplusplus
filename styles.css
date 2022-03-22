@@ -1,12 +1,22 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
+:root {
+  /* GLOBAL COLOR VARIABLES */
+  --light-grey: #d3d0cb;
+  --light-green: #8ff7a7;
+  --light-yellow: #fcdc4d;
+  --dark-grey: #b8b3be;
+  /* KEYBOARD VARIABLES */
+  --kb-btn-height: 3rem;
+  --kb-btn-width: 4rem;
+}
 
 ul,
 ol {
   list-style: none;
 }
-
+/* CREATE GAME */
 #container {
   display: flex;
   flex-direction: column;
@@ -16,6 +26,7 @@ ol {
 #wordle-title {
   margin: 0;
   font-size: 3rem;
+  user-select: none;
 }
 
 #create-game-wrapper {
@@ -24,6 +35,33 @@ ol {
   align-items: center;
 }
 
+#create-game-ul {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.5rem;
+}
+
+#create-game-ul > * {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  column-gap: 2rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+button {
+  outline: none;
+  padding: 0.25rem 1rem;
+  font-weight: 500;
+  font-size: 1.5rem;
+  border-radius: 1rem;
+  border: 1px #b8b3be solid;
+  margin: 0.125rem;
+}
+/* GAME BOXES */
 .game-box {
   font-size: 3rem;
   display: inline-block;
@@ -38,17 +76,93 @@ ol {
 }
 
 .game-box-default {
-  background-color: #d3d0cb;
+  background-color: var(--light-grey) !important;
 }
 
 .game-box-green {
-  background-color: #8ff7a7;
+  background-color: var(--light-green) !important;
 }
 
 .game-box-yellow {
-  background-color: #fcdc4d;
+  background-color: var(--light-yellow) !important;
 }
 
 .game-box-grey {
-  background-color: #b8b3be;
+  background-color: var(--dark-grey) !important;
 }
+/* MODAL */
+.modal-wrapper {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  margin: 15% auto;
+  padding: 1rem;
+  border: 1px solid #888;
+  width: 40%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+#kb-wrapper > * {
+  gap: 0.25rem;
+}
+/* KEYBOARD */
+/* i think this is the most elegant way to do this, it works */
+.kb-row-0 {
+  display: grid;
+  grid-template-columns: repeat(10, var(--kb-btn-width)) 1fr;
+}
+
+.kb-row-1 {
+  display: grid;
+  grid-template-columns: repeat(9, var(--kb-btn-width)) 8rem;
+  margin-inline-start: 1rem;
+}
+
+.kb-row-2 {
+  margin-inline: 8rem;
+  display: grid;
+  grid-template-columns: repeat(7, var(--kb-btn-width));
+}
+
+.kb-key {
+  width: 100%;
+  background-color: var(--light-grey);
+  border-radius: 1rem;
+  align-content: center;
+  height: var(--kb-btn-height);
+}
+
+button:hover {
+  /* i don't know if i like this */
+  filter: brightness(0.95);
+}
+
+/* TIMER */
+#timer {
+  position: fixed;
+  right: 0.5rem;
+  top: 0;
+  color: black;
+  font-size: 2rem;
+  user-select: none;
+}
+
+#timer > * {
+  display: inline;
+  user-select: none;
+}
+
