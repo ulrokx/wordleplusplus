@@ -169,13 +169,26 @@ export class Wordle {
     this.entry = []; // resets the entry array for the state
     if (correctLetters == this.wordLength) {
       // if the user got all of the letters correct
-      this.showModal(true);
+      console.log(this);
+      this.handleGameEnd({
+        win: true,
+        time: this.timer ? this.timer.getTime() : 0,
+        length: this.wordLength,
+        word: this.word,
+        difficulty: this.difficulty,
+      });
       this.active = false;
       this.stopTiming();
     } else if (this.entryRow + 1 == this.guesses) {
+      this.handleGameEnd({
+        win: false,
+        time: this.timer ? this.timer.getTime() : 0,
+        length: this.wordLength,
+        word: this.word,
+        difficulty: this.difficulty,
+      });
       this.active = false;
       this.stopTiming();
-      this.showModal(false);
     } else {
       // go to the next row without going over, might be unnecessary
       this.entryRow = Math.min(this.entryRow + 1, this.guesses);
