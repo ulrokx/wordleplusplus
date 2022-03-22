@@ -31,6 +31,7 @@ const refs = {
   ),
   guessesSelect: document.getElementById("guesses-select"),
   difficultySelect: document.getElementById("difficulty-select"),
+  timedSelect: document.getElementById("timed-select"),
   gameWrapper: document.getElementById("game-wrapper"),
   modalContent: document.getElementById("modal-content"),
   modalWrapper: document.getElementById("modal-wrapper"),
@@ -38,6 +39,10 @@ const refs = {
   modalAgain: document.getElementById("modal-again"),
   modalNew: document.getElementById("modal-new"),
   keyboardWrapper: document.getElementById("kb-wrapper"),
+  timerWrapper: document.getElementById("timer"),
+  timerMinutes: document.getElementById("t-minute"),
+  timerSeconds: document.getElementById("t-second"),
+  timerMilli: document.getElementById("t-milli"),
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 const keyboard = [
@@ -66,12 +71,17 @@ const handleNewGame = (_) => {
   const wordLength = refs.wordLengthSelect.value;
   const guesses = refs.guessesSelect.value;
   const difficulty = refs.difficultySelect.value - 1;
-  if(game) {
-  document.removeEventListener(
-    "keydown",
-    game.handleKeyPress
-  )}
-  game = new Wordle({ wordLength, guesses, difficulty, timed: true }); // creates a new game with the user inputted length and guesses
+  const timed = refs.timedSelect.checked
+  console.log(timed)
+  if (game) {
+    document.removeEventListener("keydown", game.handleKeyPress);
+  }
+  game = new Wordle({
+    wordLength,
+    guesses,
+    difficulty,
+    timed,
+  }); // creates a new game with the user inputted length and guesses
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard();
@@ -98,9 +108,17 @@ class Wordle {
     // this.difficulty = difficulty;
     Object.assign(this, options);
     if (options.timed) {
-      this.timer = new Timer();
+      this.timer = new Timer({
+        minutesRef: refs.timerMinutes,
+        secondsRef: refs.timerSeconds,
+        milliRef: refs.timerMilli,
+      });
       this.timer.start();
-      this.intervalRef = setInterval(() => this.updateTimer(), 100);
+      this.intervalRef = setInterval(
+        () => this.timer.updateElements(),
+        1
+      );
+  refs.timerWrapper.classList.remove("hidden")
     }
     const idx = parseInt(
       randInRange(
@@ -127,13 +145,10 @@ class Wordle {
     this.entryRow = 0;
     document.addEventListener("keydown", this.handleKeyPress); // to prevent errors before game
   }
-  updateTimer() {
-    console.log(this.timer.getTime())
-  }
 
   stopTiming() {
     this.timer.stop();
-    clearInterval(this.intervalRef)
+    clearInterval(this.intervalRef);
   }
   generateFreq(word) {
     const res = {};
@@ -247,9 +262,8 @@ class Wordle {
       // if the user got all of the letters correct
       showModal(true);
       state.active = false;
-      this.stopTiming()
-      console.log(this.timer.getTime())
-
+      this.stopTiming();
+      console.log(this.timer.getTime());
     } else if (this.entryRow + 1 == game.guesses) {
       showModal(false);
     } else {
@@ -313,10 +327,6 @@ class Wordle {
   }
 }
 
-const updateTimer = () => {
-  console.log(game.timer.getTime())
-}
-
 const showModal = (win) => {
   state.active = false;
   state.modalActive = true;
@@ -338,6 +348,7 @@ const resetState = () => {
   // maybe someone could write an object cloning function or find something better
   // this is really slow but doesn't really matter that much
   state = JSON.parse(JSON.stringify(initialState));
+  refs.timerWrapper.classList.add("hidden")
 };
 
 const deleteBoard = () => {

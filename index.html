@@ -50,6 +50,10 @@
               <option value="7">Impossible</option>
             </select>
           </label>
+          <label>
+            <span>Timed</span>
+            <input type="checkbox" id="timed-select" value="true"/>
+          </label>
         </ul>
         <button id="start-game-btn">Start New Game</button>
       </div>
@@ -62,6 +66,13 @@
         <button id="modal-again">Try Again</button>
         <button id="modal-new">New Game</button>
       </div>
+    </div>
+    <div id="timer" class="hidden">
+      <pre id="t-minute">00</pre>
+      <span>:</span>
+      <pre id="t-second">00</pre>
+      <span>:</span>
+      <pre id="t-milli">000</pre>
     </div>
   </body>
 </html>

@@ -38,10 +38,10 @@ ol {
 #create-game-ul {
   display: flex;
   flex-direction: column;
-  row-gap: .5rem;
+  row-gap: 0.5rem;
 }
 
-#create-game-ul>* {
+#create-game-ul > * {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -146,6 +146,23 @@ button {
   height: var(--kb-btn-height);
 }
 
-button:hover { /* i don't know if i like this */
+button:hover {
+  /* i don't know if i like this */
   filter: brightness(0.95);
 }
+
+/* TIMER */
+#timer {
+  position: fixed;
+  right: 0.5rem;
+  top: 0;
+  color: black;
+  font-size: 2rem;
+  user-select: none;
+}
+
+#timer > * {
+  display: inline;
+  user-select: none;
+}
+
