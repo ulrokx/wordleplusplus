@@ -1,133 +1,41 @@
-/*
-Wordle++ for SSW-215
-Richard Kirk, Tyler Reinert, Jeffrey Fitzsimmons, Mateusz Marciniak
-
-Initialization of board:
-takes user input for length, # of guesses (difficulty to come)
-creates Wordle class instance with user inputted values
-generates random index to find word in word list for each size
-
-on user input:
-determines if the keypress is a letter and there is space on board
-
-todo:
-make thing shake when word is not valid
-make confetti when you win
-make keyboard to show status of letters
-make play again
-store streak and guesses in localstorage
-*/
-// https://stackoverflow.com/questions/34944099/how-to-import-a-json-file-in-ecmascript-6
-import words from "./words.js";
-import Timer from "./timer.js";
-const refs = {
-  // this is better than a bunch of global variables with long names + intellisense
-  startGameButton: document.getElementById("start-game-btn"),
-  createGameWrapper: document.getElementById(
-    "create-game-wrapper"
-  ),
-  wordLengthSelect: document.getElementById(
-    "word-length-select"
-  ),
-  guessesSelect: document.getElementById("guesses-select"),
-  difficultySelect: document.getElementById("difficulty-select"),
-  timedSelect: document.getElementById("timed-select"),
-  gameWrapper: document.getElementById("game-wrapper"),
-  modalContent: document.getElementById("modal-content"),
-  modalWrapper: document.getElementById("modal-wrapper"),
-  modalHeader: document.getElementById("modal-title"),
-  modalAgain: document.getElementById("modal-again"),
-  modalNew: document.getElementById("modal-new"),
-  keyboardWrapper: document.getElementById("kb-wrapper"),
-  timerWrapper: document.getElementById("timer"),
-  timerMinutes: document.getElementById("t-minute"),
-  timerSeconds: document.getElementById("t-second"),
-  timerMilli: document.getElementById("t-milli"),
-};
-const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
+import Timer from "./timer";
+import words from "../../assets/words";
+import { randInRange } from "../util/random";
 const keyboard = [
   // keyboard buttons
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "back"],
   ["a", "s", "d", "f", "g", "h", "j", "k", "l", "enter"],
   ["z", "x", "c", "v", "b", "n", "m"],
 ];
-let game;
-// state stores the current letters entered and the current row user is typing on
-const initialState = {
-  entry: [],
-  entryRow: 0,
-  active: false,
-  modalActive: false,
-};
-
-let state = {
-  entry: [],
-  entryRow: 0,
-  active: false,
-  modalActive: false,
-};
-
-const handleNewGame = (_) => {
-  const wordLength = refs.wordLengthSelect.value;
-  const guesses = refs.guessesSelect.value;
-  const difficulty = refs.difficultySelect.value - 1;
-  const timed = refs.timedSelect.checked
-  console.log(timed)
-  if (game) {
-    document.removeEventListener("keydown", game.handleKeyPress);
-  }
-  game = new Wordle({
-    wordLength,
-    guesses,
-    difficulty,
-    timed,
-  }); // creates a new game with the user inputted length and guesses
-  refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
-  game.createBoard(); //runs method to generate game tiles per length and guesses
-  game.makeKeyboard();
-};
-
-const resetGame = (_) => {
-  resetState();
-  refs.modalWrapper.classList.add("hidden");
-  deleteBoard();
-  refs.createGameWrapper.classList.remove("hidden");
-};
-refs.startGameButton.addEventListener("click", handleNewGame);
-//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-const randInRange = (min, max) => {
-  console.log(min, max);
-  return Math.random() * (max - min) + min;
-};
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
-class Wordle {
-  constructor(options) {
+export class Wordle {
+  constructor(options, refs) {
     // creates a wordle game object with the user inputted word length and guesses
     // this.wordLength = length;
     // this.guesses = guesses;
     // this.difficulty = difficulty;
     Object.assign(this, options);
+    this.refs = refs;
     if (options.timed) {
       this.timer = new Timer({
-        minutesRef: refs.timerMinutes,
-        secondsRef: refs.timerSeconds,
-        milliRef: refs.timerMilli,
+        minutesRef: this.refs.timerMinutes,
+        secondsRef: this.refs.timerSeconds,
+        milliRef: this.refs.timerMilli,
       });
       this.timer.start();
       this.intervalRef = setInterval(
         () => this.timer.updateElements(),
         1
       );
-  refs.timerWrapper.classList.remove("hidden")
+      this.refs.timerWrapper.classList.remove("hidden");
     }
     const idx = parseInt(
       randInRange(
         // in range of | | | | |*| |, finds left and right walls
         words[this.wordLength].length *
-          (this.difficulty / DIFFICULTY_LEVELS),
+          (this.difficulty / this.difficultyLevels),
         words[this.wordLength].length *
-          (this.difficulty / DIFFICULTY_LEVELS) +
-          words[this.wordLength].length / DIFFICULTY_LEVELS
+          (this.difficulty / this.difficultyLevels) +
+          words[this.wordLength].length / this.difficultyLevels
       ),
       10
     ); // randomly chosen index
@@ -139,16 +47,18 @@ class Wordle {
 
     this.letterFreq = this.generateFreq(this.word);
     //populate letterFreq with counts of each letter
-    state.active = true;
     this.letterStatus = {};
     this.entry = [];
     this.entryRow = 0;
+    this.active = true;
     document.addEventListener("keydown", this.handleKeyPress); // to prevent errors before game
   }
 
   stopTiming() {
-    this.timer.stop();
-    clearInterval(this.intervalRef);
+    if (this.timer && this.intervalRef) {
+      this.timer.stop();
+      clearInterval(this.intervalRef);
+    }
   }
   generateFreq(word) {
     const res = {};
@@ -169,12 +79,11 @@ class Wordle {
         const box = this.makeBox(c, r);
         ul.appendChild(box);
       }
-      refs.gameWrapper.appendChild(ul);
+      this.refs.gameWrapper.appendChild(ul);
     }
   }
   handleKeyPress = (e) => {
-    console.log(e);
-    if (!state.active) return; // if game is not in progress do nothing
+    if (!this.active) return; // if game is not in progress do nothing
     if (e.repeat) return; // if the letter is being held down do nothing
     if (e.key === "Backspace" || e.key === "BACK") {
       // if it is a backspace
@@ -260,12 +169,13 @@ class Wordle {
     this.entry = []; // resets the entry array for the state
     if (correctLetters == this.wordLength) {
       // if the user got all of the letters correct
-      showModal(true);
-      state.active = false;
+      this.showModal(true);
+      this.active = false;
       this.stopTiming();
-      console.log(this.timer.getTime());
-    } else if (this.entryRow + 1 == game.guesses) {
-      showModal(false);
+    } else if (this.entryRow + 1 == this.guesses) {
+      this.active = false;
+      this.stopTiming();
+      this.showModal(false);
     } else {
       // go to the next row without going over, might be unnecessary
       this.entryRow = Math.min(this.entryRow + 1, this.guesses);
@@ -310,7 +220,7 @@ class Wordle {
         li.appendChild(this.makeKey(v));
         ul.appendChild(li);
       }
-      refs.keyboardWrapper.appendChild(ul);
+      this.refs.keyboardWrapper.appendChild(ul);
     }
   }
 
@@ -326,32 +236,3 @@ class Wordle {
     return element;
   }
 }
-
-const showModal = (win) => {
-  state.active = false;
-  state.modalActive = true;
-  refs.modalWrapper.classList.remove("hidden");
-  // should be able to reuse most of this with some small modifications
-  refs.modalHeader.textContent = win ? "Victory" : "You Lost";
-};
-
-refs.modalNew.addEventListener("click", resetGame);
-refs.modalAgain.addEventListener("click", () => {
-  refs.modalWrapper.classList.add("hidden");
-  deleteBoard();
-  resetState();
-  handleNewGame();
-}); // just add the listeners now even tho it isn't visible
-
-const resetState = () => {
-  // forgive me but it works
-  // maybe someone could write an object cloning function or find something better
-  // this is really slow but doesn't really matter that much
-  state = JSON.parse(JSON.stringify(initialState));
-  refs.timerWrapper.classList.add("hidden")
-};
-
-const deleteBoard = () => {
-  refs.gameWrapper.replaceChildren([]);
-  refs.keyboardWrapper.replaceChildren([]);
-};
