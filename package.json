@@ -1,7 +1,6 @@
 {
   "name": "wordle",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "https://github.com/ulrokx/wordleplusplus.git",
   "author": "Ricky <richard.kirk790@gmail.com>",
   "license": "MIT",
@@ -11,5 +10,9 @@
   },
   "dependencies": {
     "firebase": "^9.6.9"
+  },
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html"
   }
 }
