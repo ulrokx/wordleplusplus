@@ -115,7 +115,7 @@ export class Wordle {
 
   handleGuess() {
     // handles any time user clicks enter
-    const guess = this.entry.join("");
+    const guess = this.entry.join("").toLowerCase();
     if (
       guess.length != this.wordLength ||
       !words[this.wordLength].includes(guess)
@@ -244,7 +244,7 @@ export class Wordle {
     element.classList.add("kb-key");
     element.textContent = key.toUpperCase(); // below is kinda bad but it works
     element.addEventListener("click", (e) =>
-      handleKeyPress({ key: e.target.textContent })
+      this.handleKeyPress({ key: e.target.textContent })
     );
     return element;
   }

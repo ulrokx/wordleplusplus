@@ -18,7 +18,8 @@ make play again
 store streak and guesses in localstorage
 */
 // https://stackoverflow.com/questions/34944099/how-to-import-a-json-file-in-ecmascript-6
-import { Wordle } from "./classes/wordle";
+import Scoreboard from "./classes/scoreboard";
+import { Wordle } from "./classes/wordle.js";
 import { addScore, getScores } from "./firebase/api";
 const refs = {
   // this is better than a bunch of global variables with long names + intellisense
@@ -77,10 +78,32 @@ const handleNewGame = (_) => {
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard();
 };
-(async () => {
-  const scores = await getScores(5);
-  scores.forEach(doc => console.log(doc.data()));
-})();
+
+const createScoreboard = async () => {
+  const data = await getScores(5);
+  const scores = [];
+  data.forEach((d) => scores.push(d.data()));
+  console.log(scores)
+  const sb = new Scoreboard(scores, {
+    columns: [
+      {
+        display: "word",
+        key: "word",
+      },
+      {
+        display: "speed",
+        key: "time",
+      },
+    ],
+  }).elem();
+  sb.style.position = "fixed";
+  sb.style.left = "0";
+  sb.style.top = "0";
+  document.body.append(sb);
+};
+
+createScoreboard();
+
 const handleGameEnd = async (options) => {
   const { win, time, length, word, difficulty } = options;
   showModal(win);

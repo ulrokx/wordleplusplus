@@ -52,12 +52,15 @@ export default class Timer {
       console.error("elements not provided");
     }
     const time = this.getTime();
+
     this.minutesRef.textContent = String(
       Math.floor(time / (60 * 1000))
     ).padStart(2, "0");
+
     this.secondsRef.textContent = String(
       Math.floor(time / 1000) % 60
     ).padStart(2, "0");
+
     this.milliRef.textContent = String(time % 1000).padStart(
       3,
       "0"
