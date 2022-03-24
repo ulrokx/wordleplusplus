@@ -1,6 +1,8 @@
 {
   "name": "wordle",
   "version": "1.0.0",
+  "source": "src/index.html",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "repository": "https://github.com/ulrokx/wordleplusplus.git",
   "author": "Ricky <richard.kirk790@gmail.com>",
   "license": "MIT",
@@ -12,7 +14,7 @@
     "firebase": "^9.6.9"
   },
   "scripts": {
-    "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html"
+    "dev": "parcel",
+    "build": "parcel build"
   }
 }

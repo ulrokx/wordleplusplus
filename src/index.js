@@ -18,8 +18,10 @@ make play again
 store streak and guesses in localstorage
 */
 // https://stackoverflow.com/questions/34944099/how-to-import-a-json-file-in-ecmascript-6
+import Modal from "./classes/modal";
 import Scoreboard from "./classes/scoreboard";
 import { Wordle } from "./classes/wordle.js";
+import { generateGuessGraph } from "./elements/guessGraph";
 import { addScore, getScores } from "./firebase/api";
 const refs = {
   // this is better than a bunch of global variables with long names + intellisense
@@ -47,13 +49,29 @@ const refs = {
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
+const sbColumns = [
+  {
+    display: "word",
+    key: "word",
+  },
+  {
+    display: "speed",
+    key: "time",
+  },
+];
 
 const showModal = (win) => {
-  refs.modalWrapper.classList.remove("hidden");
-  // should be able to reuse most of this with some small modifications
-  refs.modalHeader.textContent = win ? "Victory" : "You Lost";
+  const graph = generateGuessGraph([
+    { count: 4, guesses: 2 },
+    { count: 3, guesses: 3 },
+    { count: 2, guesses: 4 },
+    { count: 1, guesses: 5 },
+  ]);
+  const modal = new Modal("win", graph);
+  document.body.append(modal.elem());
+  modal.show();
 };
-
+showModal(false);
 const handleNewGame = (_) => {
   const wordLength = refs.wordLengthSelect.value;
   const guesses = refs.guessesSelect.value;
@@ -83,22 +101,10 @@ const createScoreboard = async () => {
   const data = await getScores(5);
   const scores = [];
   data.forEach((d) => scores.push(d.data()));
-  console.log(scores)
+  console.log(scores);
   const sb = new Scoreboard(scores, {
-    columns: [
-      {
-        display: "word",
-        key: "word",
-      },
-      {
-        display: "speed",
-        key: "time",
-      },
-    ],
+    columns: sbColumns,
   }).elem();
-  sb.style.position = "fixed";
-  sb.style.left = "0";
-  sb.style.top = "0";
   document.body.append(sb);
 };
 

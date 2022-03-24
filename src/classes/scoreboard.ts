@@ -15,15 +15,20 @@ export default class Scoreboard {
   options: ScoreboardOptions;
   constructor(scores: Scores, options: ScoreboardOptions) {
     // scores is an array of objects with parallel column names
-    if (scores.length === 0) {
-      console.error("scores array is empty!");
-    }
-    this.table = document.createElement(`table`);
     this.scores = scores;
     this.options = options;
+    if (scores.length === 0) {
+      console.error("scores array is empty!");
+      return
+    }
+    this.table = document.createElement(`table`);
+    this.table.classList.add("scoreboard");
   }
 
   elem() {
+    if (this.scores.length === 0) {
+      return document.createElement(`div`);
+    }
     this.table.replaceChildren("");
     const thr = document.createElement("tr");
     this.options.columns.forEach((c) => {

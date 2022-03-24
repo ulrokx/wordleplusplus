@@ -91,7 +91,7 @@ button {
   background-color: var(--dark-grey) !important;
 }
 /* MODAL */
-.modal-wrapper {
+.modal {
   position: fixed;
   z-index: 1;
   left: 0;
@@ -166,3 +166,16 @@ button:hover {
   user-select: none;
 }
 
+/* SCOREBOARD */
+
+.scoreboard {
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+td, th {
+  padding: 0.5rem;
+  text-align: center;
+  outline: solid 1px #b8b3be;
+}
