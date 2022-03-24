@@ -6,6 +6,7 @@ export const addScore = async (payload) => {
     const docRef = await addDoc(
       collection(db, `scores-${payload.length}`),
       {
+        name: payload.name || "Anonymous",
         word: payload.word,
         time: payload.time,
         difficulty: payload.difficulty,
@@ -16,6 +17,7 @@ export const addScore = async (payload) => {
     console.error(e);
   }
 };
+
 
 export const getScores = async (length) => {
   const querySnapshot = await getDocs(collection(db, `scores-${length}`));
