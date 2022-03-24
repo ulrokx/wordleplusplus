@@ -1,41 +1,53 @@
-interface GuessDistribution {
-  guesses: number;
-  count: number;
-}
+import elem from "../util/element";
+import { GuessDistributions } from "../util/localStats";
 
-type GuessDistributions = Array<GuessDistribution>;
+
+const clamp = (
+  num: number,
+  min: number,
+  max: number
+): number => {
+  return Math.min(Math.max(num, min), max);
+};
 
 export const generateGuessGraph = (
   dist: GuessDistributions
 ): HTMLCanvasElement => {
-  const canvas = document.createElement("canvas");
+  const canvas = elem("canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
   const width = (canvas.width = 400);
   const height = (canvas.height = dist.length * 50);
   const maxCount = Object.values(dist).reduce(
     (a, b) => Math.max(a, b.count),
-    0
-  );
+    1
+  ) as number;
 
   ctx.font = "22px sans-serif";
   dist.forEach((guess, i) => {
-    console.log(guess);
     ctx.fillStyle = "black";
     ctx.fillText(String(guess.guesses) + ":", 0, i * 50 + 25);
-    ctx.fillStyle = "green";
+    ctx.fillStyle = "#8ff7a7";
+    const textWidth = ctx.measureText(String(guess.count)).width;
+    const barWidth = (guess.count / maxCount) * width - textWidth - 10;
+    console.log(barWidth);
     ctx.fillRect(
       25,
       i * 50,
-      (width * guess.count) / maxCount,
+      clamp(
+        barWidth,
+        3,
+        width - 25 - textWidth
+      ),
       30
     );
     ctx.fillStyle = "black";
     ctx.fillText(
       String(guess.count),
-      Math.min(width * (guess.count / maxCount), width) -
-        0.2 *
-          guess.count *
-          ctx.measureText(String(guess.count)).width,
+      clamp(
+        width * (guess.count / maxCount) + textWidth,
+        4 + 2 * textWidth,
+        width - textWidth
+      ),
       i * 50 + 25
     );
   });

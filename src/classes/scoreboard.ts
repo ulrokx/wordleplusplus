@@ -1,3 +1,5 @@
+import elem from "../util/element";
+
 type Scores = Array<object>;
 
 interface Column {
@@ -19,7 +21,7 @@ export default class Scoreboard {
     this.options = options;
     if (scores.length === 0) {
       console.error("scores array is empty!");
-      return
+      return;
     }
     this.table = document.createElement(`table`);
     this.table.classList.add("scoreboard");
@@ -27,28 +29,35 @@ export default class Scoreboard {
 
   elem() {
     if (this.scores.length === 0) {
-      return document.createElement(`div`);
+      return elem(`div`);
     }
     this.table.replaceChildren("");
-    const thr = document.createElement("tr");
-    this.options.columns.forEach((c) => {
-      const th = document.createElement("th");
-      th.textContent = c.display;
-      thr.appendChild(th)
-    });
-    this.table.appendChild(thr);
-    this.scores.forEach((e) => {
-      const tr = document.createElement("tr");
-      this.options.columns.forEach((c) => {
-        const td = document.createElement("td");
-        if (e[c.key]) {
-          td.textContent = e[c.key];
-        }
-        tr.appendChild(td);
-      });
-      this.table.appendChild(tr);
-    });
-    console.log(this.table)
+    this.table.append(
+      elem(
+        // create table header row with column names
+        "tr",
+        this.options.columns.map((col) => {
+          // map columns to th elements
+          console.log(col.display);
+          return elem("th", { class: "scoreboard-header" }, [
+            col.display, // column display name
+          ]);
+        }),
+        this.scores.map((score) => {
+          // map scores to tr elements
+          return elem(
+            "tr",
+            { class: "scoreboard-row" },
+            this.options.columns.map((col) => {
+              return elem("td", { class: "scoreboard-cell" }, 
+                col.key in score ? score[col.key] : "", // column value
+              );
+            })
+          );
+        })
+      )
+    );
+
     return this.table;
   }
 }

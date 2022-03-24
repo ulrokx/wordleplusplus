@@ -22,7 +22,9 @@ import Modal from "./classes/modal";
 import Scoreboard from "./classes/scoreboard";
 import { Wordle } from "./classes/wordle.js";
 import { generateGuessGraph } from "./elements/guessGraph";
+import generateWinContent, { generateModalButtons } from "./elements/winModalContent";
 import { addScore, getScores } from "./firebase/api";
+import { getStats } from "./util/localStats";
 const refs = {
   // this is better than a bunch of global variables with long names + intellisense
   startGameButton: document.getElementById("start-game-btn"),
@@ -59,19 +61,18 @@ const sbColumns = [
     key: "time",
   },
 ];
+let modal;
 
 const showModal = (win) => {
-  const graph = generateGuessGraph([
-    { count: 4, guesses: 2 },
-    { count: 3, guesses: 3 },
-    { count: 2, guesses: 4 },
-    { count: 1, guesses: 5 },
-  ]);
-  const modal = new Modal("win", graph);
+  const stats = getStats(game.wordLength);
+  console.log(stats.distribution)
+  const graph = generateGuessGraph(stats.distribution);
+  const content = generateWinContent(stats);
+  content.append(graph, generateModalButtons(handleResetGame, handlePlayAgain));
+  modal = new Modal("Victory", content, {});
   document.body.append(modal.elem());
   modal.show();
 };
-showModal(false);
 const handleNewGame = (_) => {
   const wordLength = refs.wordLengthSelect.value;
   const guesses = refs.guessesSelect.value;
@@ -116,8 +117,8 @@ const handleGameEnd = async (options) => {
   await addScore({ time, length, word, difficulty });
 };
 
-const resetGame = (_) => {
-  refs.modalWrapper.classList.add("hidden");
+const handleResetGame = (_) => {
+  modal.hide();
   deleteBoard();
   refs.createGameWrapper.classList.remove("hidden");
   refs.timerWrapper.classList.add("hidden");
@@ -125,13 +126,17 @@ const resetGame = (_) => {
 refs.startGameButton.addEventListener("click", handleNewGame);
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes
 
-refs.modalNew.addEventListener("click", resetGame);
-refs.modalAgain.addEventListener("click", () => {
-  refs.modalWrapper.classList.add("hidden");
+// refs.modalNew.addEventListener("click", resetGame);
+// refs.modalAgain.addEventListener("click", () => {
+//   refs.modalWrapper.classList.add("hidden");
+//   deleteBoard();
+//   handleNewGame();
+// }); // just add the listeners now even tho it isn't visible
+const handlePlayAgain = () => {
+  modal.hide();
   deleteBoard();
   handleNewGame();
-}); // just add the listeners now even tho it isn't visible
-
+};
 const deleteBoard = () => {
   refs.gameWrapper.replaceChildren([]);
   refs.keyboardWrapper.replaceChildren([]);

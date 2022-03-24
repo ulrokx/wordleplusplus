@@ -1,24 +1,20 @@
+import elem from "../util/element";
+
 export default class Modal {
   title: string;
   content: HTMLElement;
-  modal: HTMLDivElement;
+  modal: HTMLElement;
   modalContent: HTMLDivElement;
   body: HTMLElement;
   constructor(title: string, content: HTMLElement) {
     this.title = title;
     this.content = content;
-    this.modal = document.createElement("div");
-    this.modal.classList.add("hidden", "modal");
-    this.modalContent = document.createElement("div");
-    this.modalContent.classList.add("modal-content");
-    this.body = document.createElement("section");
-    this.body.append(content);
-    this.modalContent.append(
-      (document.createElement("header").textContent =
-        this.title),
-      this.body
-    );
-    this.modal.append(this.modalContent);
+    this.modal = elem("div", { class: "modal hidden" }, [
+      elem("div", { class: "modal-content" }, [
+        elem("header", { class: "modal-header" }, [title]),
+        elem("div", { class: "modal-body" }, [content]),
+      ]),
+    ]);
   }
 
   show() {
