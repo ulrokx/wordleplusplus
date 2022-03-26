@@ -6,30 +6,39 @@ export interface LocalStats {
   distribution: GuessDistributions;
 }
 
-export interface LengthDistribution {
-  [key: number]: GuessDistributions;
+export interface GuessDistributions {
+  [key: number]: number;
 }
-
-export interface GuessDistribution {
-  guesses: number;
-  count: number;
-}
-
-export type GuessDistributions = Array<GuessDistribution>;
-
-export function getStats(length: number): LocalStats {
+export async function getStats(
+  length: number,
+  difficulty: number
+): Promise<LocalStats> {
   const stats = localStorage.getItem("stats");
-  const dists = localStorage.getItem(`dist-${length}`);
+  const dists = localStorage.getItem(
+    `dist-${length}-${difficulty}`
+  );
   const res: LocalStats = stats
-    ? JSON.parse(stats)
-    : { played: 0, wins: 1, currentStreak: 0, maxStreak: 0 };
+    ? await JSON.parse(stats)
+    : { played: 0, wins: 0, currentStreak: 0, maxStreak: 0 };
   if (dists) {
-    res.distribution = JSON.parse(dists);
+    console.log("dist", dists);
+    res.distribution = await JSON.parse(dists);
   } else {
-    res.distribution = Array(8).fill(0).map((_, i) => ({
-      guesses: i + 1,
-      count: 0,
-    }));
+    res.distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0};
   }
   return res;
+}
+
+export async function setStats(
+  length: number,
+  difficulty: number,
+  stats: LocalStats
+) {
+  const dist = stats.distribution;
+  delete stats.distribution;
+  localStorage.setItem("stats", JSON.stringify(stats));
+  localStorage.setItem(
+    `dist-${length}-${difficulty}`,
+    JSON.stringify(dist)
+  );
 }

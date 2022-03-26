@@ -6,10 +6,10 @@ export default class Modal {
   modal: HTMLElement;
   modalContent: HTMLDivElement;
   body: HTMLElement;
-  constructor(title: string, content: HTMLElement) {
-    this.title = title;
+  constructor(title: string, content: HTMLElement) { 
+    this.title = title; 
     this.content = content;
-    this.modal = elem("div", { class: "modal hidden" }, [
+    this.modal = elem("div", { class: "modal hidden" }, [  // create modal element
       elem("div", { class: "modal-content" }, [
         elem("header", { class: "modal-header" }, [title]),
         elem("div", { class: "modal-body" }, [content]),
@@ -17,16 +17,16 @@ export default class Modal {
     ]);
   }
 
-  show() {
+  show() {  // show the modal
     this.modal.classList.remove("hidden");
     this.modal.focus();
   }
 
-  hide() {
+  hide() { // hide the modal
     this.modal.classList.add("hidden");
   }
 
-  elem() {
+  elem() { // return the modal element
     return this.modal;
   }
 }

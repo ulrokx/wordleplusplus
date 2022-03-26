@@ -13,26 +13,28 @@ const clamp = (
 export const generateGuessGraph = (
   dist: GuessDistributions
 ): HTMLCanvasElement => {
+  console.log(dist)
   const canvas = elem("canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
   const width = (canvas.width = 400);
-  const height = (canvas.height = dist.length * 50);
+  const height = (canvas.height = Object.keys(dist).length * 50);
   const maxCount = Object.values(dist).reduce(
-    (a, b) => Math.max(a, b.count),
+    (a, b) => Math.max(a, b),
     1
   ) as number;
 
   ctx.font = "22px sans-serif";
-  dist.forEach((guess, i) => {
+  Object.keys(dist).forEach((guess, i) => {
     ctx.fillStyle = "black";
-    ctx.fillText(String(guess.guesses) + ":", 0, i * 50 + 25);
+    ctx.fillText(String(guess) + ":", 0, i * 50 + 25);
     ctx.fillStyle = "#8ff7a7";
-    const textWidth = ctx.measureText(String(guess.count)).width;
-    const barWidth = (guess.count / maxCount) * width - textWidth - 10;
-    console.log(barWidth);
+    const textWidth = ctx.measureText(String(dist[guess])).width;
+    const barWidth = (dist[guess] / maxCount) * width - textWidth - 10;
+    const guessNum = parseInt(guess) - 1
+    console.log(guess, dist[guess], maxCount, barWidth);
     ctx.fillRect(
       25,
-      i * 50,
+      guessNum * 50,
       clamp(
         barWidth,
         3,
@@ -42,13 +44,13 @@ export const generateGuessGraph = (
     );
     ctx.fillStyle = "black";
     ctx.fillText(
-      String(guess.count),
+      String(dist[guess]),
       clamp(
-        width * (guess.count / maxCount) + textWidth,
+        width * (dist[guess] / maxCount) + textWidth,
         4 + 2 * textWidth,
         width - textWidth
       ),
-      i * 50 + 25
+      guessNum * 50 + 25
     );
   });
 

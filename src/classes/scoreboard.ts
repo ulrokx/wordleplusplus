@@ -38,7 +38,6 @@ export default class Scoreboard {
         "tr",
         this.options.columns.map((col) => {
           // map columns to th elements
-          console.log(col.display);
           return elem("th", { class: "scoreboard-header" }, [
             col.display, // column display name
           ]);

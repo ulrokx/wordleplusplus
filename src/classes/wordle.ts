@@ -1,13 +1,37 @@
 import Timer from "./timer";
 import words from "../../assets/words";
 import { randInRange } from "../util/random";
+import elem from "../util/element";
 const keyboard = [
   // keyboard buttons
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "back"],
   ["a", "s", "d", "f", "g", "h", "j", "k", "l", "enter"],
   ["z", "x", "c", "v", "b", "n", "m"],
 ];
+
+interface HandleGameEndOptions {
+  win: boolean;
+  time: number;
+  word: string;
+  difficulty: number;
+  length: number;
+  guesses: number;
+}
 export class Wordle {
+  refs: any;
+  timer: Timer;
+  intervalRef: NodeJS.Timer;
+  wordLength: any;
+  difficulty: any;
+  difficultyLevels: any;
+  word: any;
+  letterFreq: {};
+  letterStatus: {};
+  entry: any[];
+  entryRow: number;
+  active: boolean;
+  guesses: number;
+  handleGameEnd: (options: HandleGameEndOptions) => void;
   constructor(options, refs) {
     // creates a wordle game object with the user inputted word length and guesses
     // this.wordLength = length;
@@ -44,6 +68,7 @@ export class Wordle {
         Math.min(idx, words[this.wordLength].length - 1)
       ];
     console.log(this.word);
+    document.body.append(elem("div", this.word));
 
     this.letterFreq = this.generateFreq(this.word);
     //populate letterFreq with counts of each letter
@@ -113,7 +138,7 @@ export class Wordle {
     }
   };
 
-  handleGuess() {
+  async handleGuess() {
     // handles any time user clicks enter
     const guess = this.entry.join("").toLowerCase();
     if (
@@ -169,13 +194,13 @@ export class Wordle {
     this.entry = []; // resets the entry array for the state
     if (correctLetters == this.wordLength) {
       // if the user got all of the letters correct
-      console.log(this);
       this.handleGameEnd({
         win: true,
         time: this.timer ? this.timer.getTime() : 0,
         length: this.wordLength,
         word: this.word,
         difficulty: this.difficulty,
+        guesses: this.entryRow + 1,
       });
       this.active = false;
       this.stopTiming();
@@ -186,6 +211,7 @@ export class Wordle {
         length: this.wordLength,
         word: this.word,
         difficulty: this.difficulty,
+        guesses: this.entryRow,
       });
       this.active = false;
       this.stopTiming();
@@ -229,10 +255,11 @@ export class Wordle {
       const ul = document.createElement("ul");
       ul.classList.add(`kb-row-${i}`);
       for (let v of keyboard[i]) {
-        const li = document.createElement("li");
-        li.appendChild(this.makeKey(v));
+        // for each letter in the row of the keyboard
+        const li = document.createElement("li"); // create a li element
+        li.appendChild(this.makeKey(v)); // add the letter to the li
         ul.appendChild(li);
-      }
+      } // add the li to the ul
       this.refs.keyboardWrapper.appendChild(ul);
     }
   }
@@ -244,7 +271,7 @@ export class Wordle {
     element.classList.add("kb-key");
     element.textContent = key.toUpperCase(); // below is kinda bad but it works
     element.addEventListener("click", (e) =>
-      this.handleKeyPress({ key: e.target.textContent })
+      this.handleKeyPress({ key: (e.target as HTMLButtonElement).textContent })
     );
     return element;
   }

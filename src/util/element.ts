@@ -26,7 +26,6 @@ export default function elem(
       if (Array.isArray(child)) {
         // if a child is an array of elements
         child.forEach((c) => {
-          console.log("hello", c);
           if (c instanceof HTMLElement) {
             // if child is a string, create text node
             element.appendChild(c);
