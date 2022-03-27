@@ -3,21 +3,34 @@ Returns the element with the given tag name and attributes. Appends the given ch
  */
 export default function elem(
   tag: string,
-  attrs?: { [key: string]: string } | Array<HTMLElement> | {},
+  attrs?:
+    | { [key: string]: string }
+    | Array<HTMLElement>
+    | string
+    | HTMLElement,
   ...children: Array<
     HTMLElement | string | Array<HTMLElement | string>
   >
 ): HTMLElement {
   const element = document.createElement(tag); // create element
-  if (!children && attrs && Array.isArray(attrs)) {
-    children = attrs; // if no attrs, but children, set attrs to children
+  if (
+    !children &&
+    attrs &&
+    (Array.isArray(attrs) || typeof attrs === "string")
+  ) {
+    console.log("here", attrs)
+    if (typeof attrs === "string") {
+      element.innerText = attrs;
+    } else {
+      children = attrs; // if no attrs, but children, set attrs to children
+    }
   } else if (attrs) {
     // if attrs exist then loop through them  and set attributes
     Object.keys(attrs).forEach((key) => {
-      try { // idk what is going on here
-      element.setAttribute(key, attrs[key]);
-      } catch (e) {
-      }
+      try {
+        // idk what is going on here
+        element.setAttribute(key, attrs[key]);
+      } catch (e) {}
     });
   }
   if (children) {

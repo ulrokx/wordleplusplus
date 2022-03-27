@@ -114,7 +114,7 @@ button {
 }
 
 .modal-content {
-  margin: 5% auto;
+  margin: 2% auto;
   padding: 1rem 2rem;
   border: 1px solid #888;
   width: 40%;
@@ -132,6 +132,18 @@ button {
   margin-bottom: 1rem;
 }
 
+.graph-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.dist-title {
+  margin: 0;
+}
+.dist-type {
+  margin: 0 0 .25rem 0;
+}
 .stats-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -158,6 +170,13 @@ button {
 .stats-value {
   font-size: 1.5rem;
   font-weight: 500;
+}
+.modal-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
 }
 /* KEYBOARD */
 /* i think this is the most elegant way to do this, it works */

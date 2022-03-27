@@ -65,8 +65,8 @@ const sbColumns = [
 ];
 let modal;
 
-const showModal = (win, stats) => {
-  const graph = generateGuessGraph(stats.distribution);
+const showModal = (win, stats, length, difficulty) => {
+  const graph = generateGuessGraph(stats.distribution, length, difficulty);
   const content = generateWinContent(stats);
   content.append(
     graph,
@@ -130,7 +130,7 @@ const handleGameEnd = async (options) => {
   if (win) {
     stats.distribution[guesses]++;
   }
-  showModal(win, stats);
+  showModal(win, stats, length, difficulty);
   setStats(length, difficulty, stats); // set stats in localstorage
   await addScore({ time, length, word, difficulty });
 };
