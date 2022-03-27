@@ -99,7 +99,7 @@ export class Wordle {
   }
   createBoard() {
     for (let r = 0; r < this.guesses; r++) {
-      const ul = document.createElement("ul");
+      const ul = elem("ul", { class: "game-row" });
       for (let c = 0; c < this.wordLength; c++) {
         const box = this.makeBox(c, r);
         ul.appendChild(box);
@@ -221,13 +221,12 @@ export class Wordle {
     }
   }
 
-  makeBox(c, r) {
+  makeBox(c: number, r: number) {
     // factory for making a game box with a specific id
-    const element = document.createElement("li");
-    element.classList.add("game-box", "game-box-default"); //
-    element.id = `r-${r}c-${c}`; // unique id for each box from row and column
-    // element.innerText = r + "" + c;
-    return element;
+    return elem("li", {
+      class: "game-box game-box-default",
+      id: `r-${r}c-${c}`,
+    });
   }
 
   updateKeyboard(letter, color) {
@@ -271,7 +270,9 @@ export class Wordle {
     element.classList.add("kb-key");
     element.textContent = key.toUpperCase(); // below is kinda bad but it works
     element.addEventListener("click", (e) =>
-      this.handleKeyPress({ key: (e.target as HTMLButtonElement).textContent })
+      this.handleKeyPress({
+        key: (e.target as HTMLButtonElement).textContent,
+      })
     );
     return element;
   }

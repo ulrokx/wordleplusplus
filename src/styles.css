@@ -62,17 +62,28 @@ button {
   margin: 0.125rem;
 }
 /* GAME BOXES */
+.game-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  column-gap: 0.125rem;
+}
 .game-box {
-  font-size: 3rem;
-  display: inline-block;
-  margin-inline: 0.125rem;
-  padding-inline: 0.5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
   border-radius: 1rem;
-  text-align: center;
+  margin-inline: 0.125rem;
   min-width: 5rem;
-  min-height: 5rem;
+  min-height: 4rem;
   overflow: hidden;
   user-select: none;
+}
+
+.game-box-letter {
+  width: 100%;
+  height: 100%;
 }
 
 .game-box-default {
@@ -98,12 +109,12 @@ button {
   top: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
-  margin: 15% auto;
+  margin: 5% auto;
   padding: 1rem 2rem;
   border: 1px solid #888;
   width: 40%;
@@ -123,7 +134,7 @@ button {
 
 .stats-row {
   display: grid;
-  grid-template-columns: 1fr 1fr ;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -135,7 +146,7 @@ button {
   align-items: center;
   background-color: var(--light-grey);
   border-radius: 1rem;
-  padding: .5rem 0;
+  padding: 0.5rem 0;
 }
 
 .stats-label {
@@ -206,7 +217,8 @@ button:hover {
   top: 0;
 }
 
-td, th {
+td,
+th {
   padding: 0.5rem;
   text-align: center;
   outline: solid 1px #b8b3be;

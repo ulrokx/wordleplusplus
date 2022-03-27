@@ -76,6 +76,7 @@ const showModal = (win, stats) => {
   document.body.append(modal.elem());
   modal.show();
 };
+
 const handleNewGame = (_) => {
   const wordLength = refs.wordLengthSelect.value;
   const guesses = refs.guessesSelect.value;
