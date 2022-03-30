@@ -22,10 +22,7 @@ export class Wordle {
         milliRef: this.refs.timerMilli,
       });
       this.timer.start();
-      this.intervalRef = setInterval(
-        () => this.timer.updateElements(),
-        1
-      );
+      this.intervalRef = setInterval(() => this.timer.updateElements(), 1);
       this.refs.timerWrapper.classList.remove("hidden");
     }
     const idx = parseInt(
@@ -40,9 +37,7 @@ export class Wordle {
       10
     ); // randomly chosen index
     this.word =
-      words[this.wordLength][
-        Math.min(idx, words[this.wordLength].length - 1)
-      ];
+      words[this.wordLength][Math.min(idx, words[this.wordLength].length - 1)];
     console.log(this.word);
 
     this.letterFreq = this.generateFreq(this.word);
@@ -112,6 +107,13 @@ export class Wordle {
       this.handleGuess();
     }
   };
+  applyShaker() {
+    for (let i = 0; i < this.entry.length; i++) {
+      const box = document.getElementById(`r-${this.entryRow}c-${i}`);
+      box.classList.add("shake-effect");
+      setTimeout(() => box.classList.remove("shake-effect"), 1000);
+    }
+  }
 
   handleGuess() {
     // handles any time user clicks enter
@@ -120,15 +122,16 @@ export class Wordle {
       guess.length != this.wordLength ||
       !words[this.wordLength].includes(guess)
     ) {
+      if (guess.length == this.wordLength) {
+        this.applyShaker();
+      }
       //word is not long enough or a valid word
       return;
     }
     const seenLetters = {}; // {letter: frequency}
     let correctLetters = 0;
     for (let i = 0; i < this.wordLength; i++) {
-      const box = document.getElementById(
-        `r-${this.entryRow}c-${i}`
-      ); // gets the each box on the row
+      const box = document.getElementById(`r-${this.entryRow}c-${i}`); // gets the each box on the row
       box.classList.remove("game-box-default");
       if (guess[i] === this.word[i]) {
         // case when the letter is correct
@@ -206,10 +209,7 @@ export class Wordle {
 
   updateKeyboard(letter, color) {
     // updates the keyboard, handles if the key is already green
-    if (
-      letter in this.letterStatus &&
-      this.letterStatus[letter] == "green"
-    )
+    if (letter in this.letterStatus && this.letterStatus[letter] == "green")
       return;
     this.letterStatus[letter] = color;
     const key = document.getElementById(`kb-${letter}`);
