@@ -9,7 +9,7 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <title>Wordle++</title>
-    <script type="module" src="index.js"></script>
+    <script type="module" src="index.ts"></script>
   </head>
   <body>
     <div id="container">
@@ -52,10 +52,27 @@
           </label>
           <label>
             <span>Timed</span>
-            <input type="checkbox" id="timed-select" value="true"/>
+            <input
+              type="checkbox"
+              id="timed-select"
+              value="true"
+            />
           </label>
         </ul>
         <button id="start-game-btn">Start New Game</button>
+      </div>
+      <div id="scoreboard-options-wrapper">
+        <label>
+          <span>Word Length</span>
+          <select name="sb-length-select" id="sb-length">
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5" selected>5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+          </select>
+        </label>
       </div>
       <div id="game-wrapper"></div>
       <div id="kb-wrapper"></div>

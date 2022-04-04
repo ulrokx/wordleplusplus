@@ -8,7 +8,7 @@ interface Column {
 }
 
 interface ScoreboardOptions {
-  hide: Array<string>;
+  hide?: Array<string>;
   columns: Array<Column>;
 }
 export default class Scoreboard {

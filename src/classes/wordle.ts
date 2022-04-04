@@ -31,6 +31,7 @@ export class Wordle {
   entryRow: number;
   active: boolean;
   guesses: number;
+  isShaking: boolean;
   handleGameEnd: (options: HandleGameEndOptions) => void;
   constructor(options, refs) {
     // creates a wordle game object with the user inputted word length and guesses
@@ -71,6 +72,7 @@ export class Wordle {
     this.entry = [];
     this.entryRow = 0;
     this.active = true;
+    this.isShaking = false;
     document.addEventListener("keydown", this.handleKeyPress); // to prevent errors before game
   }
 
@@ -133,10 +135,15 @@ export class Wordle {
     }
   };
   applyShaker() {
+    if(this.isShaking) return
     for (let i = 0; i < this.entry.length; i++) {
       const box = document.getElementById(`r-${this.entryRow}c-${i}`);
       box.classList.add("shake-effect");
-      setTimeout(() => box.classList.remove("shake-effect"), 1000);
+      this.isShaking = true;
+      setTimeout(() => {
+          box.classList.remove("shake-effect");
+          this.isShaking = false;
+        }, 1000);
     }
   }
 

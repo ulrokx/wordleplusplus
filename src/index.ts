@@ -25,7 +25,7 @@ import { generateGuessGraph } from "./elements/guessGraph";
 import generateWinContent, {
   generateModalButtons,
 } from "./elements/winModalContent";
-import { addScore, getScores } from "./firebase/api";
+import { addScore, getTopScores } from "./firebase/api";
 import { getStats, setStats } from "./util/localStats";
 const refs = {
   // this is better than a bunch of global variables with long names + intellisense
@@ -50,6 +50,8 @@ const refs = {
   timerMinutes: document.getElementById("t-minute"),
   timerSeconds: document.getElementById("t-second"),
   timerMilli: document.getElementById("t-milli"),
+  sbOpts: document.getElementById("scoreboard-options-wrapper"),
+  sbOptsLength: document.getElementById("scoreboard-length-select"),
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
@@ -65,23 +67,30 @@ const sbColumns = [
 ];
 let modal;
 
-const showModal = (win, stats, length, difficulty) => {
-  const graph = generateGuessGraph(stats.distribution, length, difficulty);
+const showModal = (win: boolean, stats, length, difficulty) => {
+  const graph = generateGuessGraph(
+    stats.distribution,
+    length,
+    difficulty
+  );
   const content = generateWinContent(stats);
   content.append(
     graph,
     generateModalButtons(handleResetGame, handlePlayAgain)
   );
-  modal = new Modal(win ? "Victory" : "You Lost", content, {});
+  modal = new Modal(win ? "Victory" : "You Lost", content);
   document.body.append(modal.elem());
   modal.show();
 };
 
-const handleNewGame = (_) => {
-  const wordLength = refs.wordLengthSelect.value;
-  const guesses = refs.guessesSelect.value;
-  const difficulty = refs.difficultySelect.value - 1;
-  const timed = refs.timedSelect.checked;
+const handleNewGame = () => {
+  const wordLength = (refs.wordLengthSelect as HTMLInputElement)
+    .value;
+  const guesses = (refs.guessesSelect as HTMLInputElement).value;
+  const difficulty =
+    Number((refs.difficultySelect as HTMLInputElement).value) -
+    1;
+  const timed = (refs.timedSelect as HTMLInputElement).checked;
   if (game) {
     document.removeEventListener("keydown", game.handleKeyPress);
   }
@@ -102,8 +111,18 @@ const handleNewGame = (_) => {
   game.makeKeyboard(); // creates keyboard
 };
 
-const createScoreboard = async () => {
-  const data = await getScores(5);
+const createScoreboard = async ({
+  length,
+  difficulty,
+}: {
+  length: number;
+  difficulty: number;
+}) => {
+  const data = await getTopScores({
+    count: 10,
+    length,
+    difficulty,
+  });
   const scores = [];
   data.forEach((d) => scores.push(d.data()));
   const sb = new Scoreboard(scores, {
@@ -112,8 +131,6 @@ const createScoreboard = async () => {
   }).elem();
   document.body.append(sb);
 };
-
-createScoreboard();
 
 const handleGameEnd = async (options) => {
   const { win, time, length, word, difficulty, guesses } =
@@ -132,10 +149,12 @@ const handleGameEnd = async (options) => {
   }
   showModal(win, stats, length, difficulty);
   setStats(length, difficulty, stats); // set stats in localstorage
-  await addScore({ time, length, word, difficulty });
+  if (time) {
+    await addScore({ time, length, word, difficulty });
+  }
 };
 
-const handleResetGame = (_) => {
+const handleResetGame = () => {
   // resets the game
   modal.hide(); // hides the modal
   deleteBoard();
@@ -151,6 +170,6 @@ const handlePlayAgain = () => {
 };
 const deleteBoard = () => {
   // deletes the board and resets the game
-  refs.gameWrapper.replaceChildren([]);
-  refs.keyboardWrapper.replaceChildren([]);
+  refs.gameWrapper.replaceChildren([] as any);
+  refs.keyboardWrapper.replaceChildren([] as any);
 };

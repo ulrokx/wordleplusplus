@@ -228,7 +228,6 @@ button:hover {
   user-select: none;
 }
 
-<<<<<<< HEAD
 /* SCOREBOARD */
 
 .scoreboard {
@@ -243,7 +242,7 @@ th {
   text-align: center;
   outline: solid 1px #b8b3be;
 }
-=======
+
 .shake-effect{
   animation: shake infinite 1s linear;
 }
@@ -265,4 +264,3 @@ th {
   }
 }
 
->>>>>>> shaker

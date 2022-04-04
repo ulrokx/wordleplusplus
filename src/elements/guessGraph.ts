@@ -23,7 +23,6 @@ export const generateGuessGraph = (
   dist: GuessDistributions,
   length: number,
   difficulty: number,
-  win: boolean
 ): HTMLElement => {
   const canvas = elem("canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
