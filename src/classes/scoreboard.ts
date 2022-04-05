@@ -36,25 +36,28 @@ export default class Scoreboard {
       elem(
         // create table header row with column names
         "tr",
+        null,
         this.options.columns.map((col) => {
           // map columns to th elements
           return elem("th", { class: "scoreboard-header" }, [
             col.display, // column display name
           ]);
-        }),
-        this.scores.map((score) => {
-          // map scores to tr elements
-          return elem(
-            "tr",
-            { class: "scoreboard-row" },
-            this.options.columns.map((col) => {
-              return elem("td", { class: "scoreboard-cell" }, 
-                col.key in score ? score[col.key] : "", // column value
-              );
-            })
-          );
         })
-      )
+      ),
+      ...this.scores.map((score) => {
+        // map scores to tr elements
+        return elem(
+          "tr",
+          { class: "scoreboard-row" },
+          this.options.columns.map((col) => {
+            return elem(
+              "td",
+              { class: "scoreboard-cell" },
+              col.key in score ? score[col.key] : "" // column value
+            );
+          })
+        );
+      })
     );
 
     return this.table;

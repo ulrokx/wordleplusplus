@@ -64,7 +64,6 @@ export class Wordle {
     this.word =
       words[this.wordLength][Math.min(idx, words[this.wordLength].length - 1)];
     console.log(this.word);
-    document.body.append(elem("div", this.word));
 
     this.letterFreq = this.generateFreq(this.word);
     //populate letterFreq with counts of each letter

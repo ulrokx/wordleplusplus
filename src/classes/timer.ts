@@ -1,4 +1,12 @@
+import msToReadable from "../util/msToReadable";
+
 export default class Timer {
+  isRunning: boolean;
+  overallTime: number;
+  startTime: number;
+  minutesRef: any;
+  secondsRef: any;
+  milliRef: any;
   constructor(options) {
     Object.assign(this, options);
     this.isRunning = false;
@@ -52,19 +60,18 @@ export default class Timer {
       console.error("elements not provided");
     }
     const time = this.getTime();
-
-    this.minutesRef.textContent = String(
-      Math.floor(time / (60 * 1000))
-    ).padStart(2, "0");
-
-    this.secondsRef.textContent = String(
-      Math.floor(time / 1000) % 60
-    ).padStart(2, "0");
-
-    this.milliRef.textContent = String(time % 1000).padStart(
-      3,
+    const { milli, seconds, minutes } = msToReadable(time);
+    this.minutesRef.textContent = String(minutes).padStart(
+      2,
       "0"
     );
+
+    this.secondsRef.textContent = String(seconds).padStart(
+      2,
+      "0"
+    );
+
+    this.milliRef.textContent = String(milli).padStart(3, "0");
   }
 
   reset() {

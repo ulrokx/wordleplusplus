@@ -52,6 +52,7 @@ const refs = {
   timerMilli: document.getElementById("t-milli"),
   sbOpts: document.getElementById("scoreboard-options-wrapper"),
   sbOptsLength: document.getElementById("scoreboard-length-select"),
+  sbWrapper: document.getElementById("scoreboard-wrapper"),
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
@@ -129,9 +130,15 @@ const createScoreboard = async ({
     // creates scoreboard
     columns: sbColumns,
   }).elem();
-  document.body.append(sb);
+  return sb;
 };
-
+(async () => {
+  const sb = await createScoreboard({
+    length: 5,
+    difficulty: 0,
+  });
+  refs.sbWrapper.append(sb);
+})();
 const handleGameEnd = async (options) => {
   const { win, time, length, word, difficulty, guesses } =
     options;

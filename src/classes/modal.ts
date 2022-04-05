@@ -24,6 +24,7 @@ export default class Modal {
 
   hide() { // hide the modal
     this.modal.classList.add("hidden");
+    this.modal.remove();
   }
 
   elem() { // return the modal element
