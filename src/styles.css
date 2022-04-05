@@ -33,6 +33,7 @@ ol {
   display: flex;
   flex-direction: column;
   align-items: center;
+  row-gap: 1rem;
 }
 
 #create-game-ul {
@@ -229,7 +230,6 @@ button:hover {
 }
 
 /* SCOREBOARD */
-
 
 td,
 th {

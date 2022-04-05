@@ -42,7 +42,6 @@ export const generateGuessGraph = (
     const barWidth =
       (dist[guess] / maxCount) * width - textWidth - 10;
     const guessNum = parseInt(guess) - 1;
-    console.log(guess, dist[guess], maxCount, barWidth);
     ctx.fillRect(
       25,
       guessNum * 50,

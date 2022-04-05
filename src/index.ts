@@ -51,20 +51,26 @@ const refs = {
   timerSeconds: document.getElementById("t-second"),
   timerMilli: document.getElementById("t-milli"),
   sbOpts: document.getElementById("scoreboard-options-wrapper"),
-  sbOptsLength: document.getElementById("scoreboard-length-select"),
+  sbOptsLength: document.getElementById(
+    "scoreboard-length-select"
+  ) as HTMLInputElement,
   sbWrapper: document.getElementById("scoreboard-wrapper"),
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
 const sbColumns = [
   {
-    display: "word",
+    display: "Word",
     key: "word",
   },
   {
-    display: "speed",
+    display: "Time",
     key: "time",
   },
+  {
+    display: "Difficulty",
+    key: "difficulty"
+  }
 ];
 let modal;
 
@@ -130,15 +136,14 @@ const createScoreboard = async ({
     // creates scoreboard
     columns: sbColumns,
   }).elem();
-  return sb;
-};
-(async () => {
-  const sb = await createScoreboard({
-    length: 5,
-    difficulty: 0,
-  });
   refs.sbWrapper.append(sb);
-})();
+};
+const createAndAppendScoreboard = async () => {
+  refs.sbWrapper.replaceChildren([] as any);
+  const length = Number(refs.sbOptsLength.value);
+  await createScoreboard({ length, difficulty: 0 });
+};
+(async () => createAndAppendScoreboard())();
 const handleGameEnd = async (options) => {
   const { win, time, length, word, difficulty, guesses } =
     options;
@@ -169,7 +174,7 @@ const handleResetGame = () => {
   refs.timerWrapper.classList.add("hidden"); // hides the timer
 };
 refs.startGameButton.addEventListener("click", handleNewGame);
-
+refs.sbOptsLength.addEventListener('change', createAndAppendScoreboard);
 const handlePlayAgain = () => {
   modal.hide();
   deleteBoard();
