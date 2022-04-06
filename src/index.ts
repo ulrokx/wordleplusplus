@@ -21,12 +21,18 @@ store streak and guesses in localstorage
 import Modal from "./classes/modal";
 import Scoreboard from "./classes/scoreboard";
 import { Wordle } from "./classes/wordle";
-import { generateGuessGraph } from "./elements/guessGraph";
+import {
+  DifficultyEnum,
+  generateGuessGraph,
+} from "./elements/guessGraph";
 import generateWinContent, {
   generateModalButtons,
+  WinModalContentOptions,
 } from "./elements/winModalContent";
 import { addScore, getTopScores } from "./firebase/api";
+import elem from "./util/element";
 import { getStats, setStats } from "./util/localStats";
+import msToReadable from "./util/msToReadable";
 const refs = {
   // this is better than a bunch of global variables with long names + intellisense
   startGameButton: document.getElementById("start-game-btn"),
@@ -66,15 +72,30 @@ const sbColumns = [
   {
     display: "Time",
     key: "time",
+    displayFn(value: number) {
+      const { milli, minutes, seconds } = msToReadable(value);
+      return `${
+        minutes > 0 ? `${minutes}m ` : ""
+      }${seconds}.${String(milli).substring(0, 2)} s`;
+    },
   },
   {
     display: "Difficulty",
-    key: "difficulty"
-  }
+    key: "difficulty",
+    displayFn(value: number) {
+      return DifficultyEnum[value];
+    },
+  },
 ];
 let modal;
 
-const showModal = (win: boolean, stats, length, difficulty) => {
+const showModal = (
+  win: boolean,
+  stats: WinModalContentOptions,
+  length: number,
+  difficulty: number,
+  word: string
+) => {
   const graph = generateGuessGraph(
     stats.distribution,
     length,
@@ -82,6 +103,13 @@ const showModal = (win: boolean, stats, length, difficulty) => {
   );
   const content = generateWinContent(stats);
   content.append(
+    !win
+      ? elem(
+          "p",
+          { class: "modal-correct-word" },
+          `The word was ${word}.`
+        )
+      : ([] as any),
     graph,
     generateModalButtons(handleResetGame, handlePlayAgain)
   );
@@ -128,7 +156,6 @@ const createScoreboard = async ({
   const data = await getTopScores({
     count: 10,
     length,
-    difficulty,
   });
   const scores = [];
   data.forEach((d) => scores.push(d.data()));
@@ -159,7 +186,7 @@ const handleGameEnd = async (options) => {
   if (win) {
     stats.distribution[guesses]++;
   }
-  showModal(win, stats, length, difficulty);
+  showModal(win, stats, length, difficulty, word);
   setStats(length, difficulty, stats); // set stats in localstorage
   if (time) {
     await addScore({ time, length, word, difficulty });
@@ -173,8 +200,12 @@ const handleResetGame = () => {
   refs.createGameWrapper.classList.remove("hidden"); // shows the create game portion
   refs.timerWrapper.classList.add("hidden"); // hides the timer
 };
+
 refs.startGameButton.addEventListener("click", handleNewGame);
-refs.sbOptsLength.addEventListener('change', createAndAppendScoreboard);
+refs.sbOptsLength.addEventListener(
+  "change",
+  createAndAppendScoreboard
+);
 const handlePlayAgain = () => {
   modal.hide();
   deleteBoard();

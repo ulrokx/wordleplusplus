@@ -1,10 +1,11 @@
 import elem from "../util/element";
 
-interface WinModalContentOptions {
+export interface WinModalContentOptions {
   played: number;
   wins: number;
   currentStreak: number;
   maxStreak: number;
+  distribution?: { [key: number]: number };
 }
 
 const statsTiles = [

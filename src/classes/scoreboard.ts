@@ -5,6 +5,7 @@ type Scores = Array<object>;
 interface Column {
   display: string;
   key: string;
+  displayFn?: (value: any) => string
 }
 
 interface ScoreboardOptions {
@@ -54,7 +55,7 @@ export default class Scoreboard {
             return elem(
               "td",
               { class: "scoreboard-cell" },
-              col.key in score ? score[col.key] : "" // column value
+              col.key in score ? (col.displayFn ? col.displayFn(score[col.key]) : score[col.key]) : "" // column value
             );
           })
         );

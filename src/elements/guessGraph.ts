@@ -9,7 +9,7 @@ const clamp = (
   return Math.min(Math.max(num, min), max);
 };
 
-const DifficultyEnum = {
+export const DifficultyEnum = {
   0: "very easy",
   1: "easy",
   2: "less easy",

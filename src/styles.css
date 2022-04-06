@@ -129,8 +129,12 @@ button {
 }
 
 .modal-content > header {
-  font-size: 2rem;
+  font-size: 5rem;
   margin-bottom: 1rem;
+}
+
+.modal-correct-word {
+  text-align: center;
 }
 
 .graph-wrapper {
