@@ -18,7 +18,6 @@ export default function elem(
     attrs &&
     (Array.isArray(attrs) || typeof attrs === "string")
   ) {
-    console.log("here", attrs);
     if (typeof attrs === "string") {
       element.innerText = attrs;
     } else {

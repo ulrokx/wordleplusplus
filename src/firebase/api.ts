@@ -18,7 +18,6 @@ export const addScore = async (payload: AddScorePayload) => {
         difficulty: payload.difficulty,
       }
     );
-    console.log(docRef.id)
   } catch (e) {
     console.error(e);
   }

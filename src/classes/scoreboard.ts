@@ -19,7 +19,6 @@ export default class Scoreboard {
   options: ScoreboardOptions;
   constructor(scores: Scores, options: ScoreboardOptions) {
     // scores is an array of objects with parallel column names
-    console.log(scores)
     this.scores = scores;
     this.options = options;
     if (scores.length === 0) {

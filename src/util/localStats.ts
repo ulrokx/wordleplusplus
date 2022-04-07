@@ -21,7 +21,6 @@ export async function getStats(
     ? await JSON.parse(stats)
     : { played: 0, wins: 0, currentStreak: 0, maxStreak: 0 };
   if (dists) {
-    console.log("dist", dists);
     res.distribution = await JSON.parse(dists);
   } else {
     res.distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0};

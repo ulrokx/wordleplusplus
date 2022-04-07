@@ -148,7 +148,11 @@ const showModal = (
                   word,
                 });
                 inputBox.parentElement.after(
-                  elem("p", {class: "modal-added"}, "Added to leaderboard!")
+                  elem(
+                    "p",
+                    { class: "modal-added" },
+                    "Added to leaderboard!"
+                  )
                 );
                 inputBox.parentElement.remove();
               },
@@ -207,7 +211,12 @@ const createScoreboard = async ({
     length,
   });
   const scores = [];
-  data.forEach((d) => scores.push(d.data()));
+  data.forEach((d) => {
+    const s = d.data();
+    if (s.time > 0) {
+      scores.push(s);
+    }
+  });
   const sb = new Scoreboard(scores, {
     // creates scoreboard
     columns: sbColumns,
@@ -220,7 +229,6 @@ const createAndAppendScoreboard = async () => {
   await createScoreboard({ length, difficulty: 0 });
 };
 (async () => await createAndAppendScoreboard())();
-
 const handleGameEnd = async (options) => {
   const { win, time, length, word, difficulty, guesses } =
     options;
@@ -246,7 +254,6 @@ const handleResetGame = () => {
   deleteBoard();
   refs.createGameWrapper.classList.remove("hidden"); // shows the create game portion
   refs.timerWrapper.classList.add("hidden"); // hides the timer
-  console.log("here")
 };
 
 refs.startGameButton.addEventListener("click", handleNewGame);
