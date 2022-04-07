@@ -134,7 +134,7 @@ export class Wordle {
   };
   applyShaker() {
     if(this.isShaking) return
-    for (let i = 0; i < this.entry.length; i++) {
+    for (let i = 0; i < this.wordLength; i++) { // Ricks' mom 
       const box = document.getElementById(`r-${this.entryRow}c-${i}`);
       box.classList.add("shake-effect");
       this.isShaking = true;
@@ -151,10 +151,7 @@ export class Wordle {
     if (
       guess.length != this.wordLength ||
       !words[this.wordLength].includes(guess)
-    ) {
-      if (guess.length == this.wordLength) {
-        this.applyShaker();
-      }
+    ) {   this.applyShaker();
       //word is not long enough or a valid word
       return;
     }
