@@ -65,6 +65,7 @@ const sbColumns = [
 ];
 let modal;
 
+<<<<<<< Updated upstream
 const showModal = (win, stats, length, difficulty) => {
   const graph = generateGuessGraph(stats.distribution, length, difficulty);
   const content = generateWinContent(stats);
@@ -75,6 +76,13 @@ const showModal = (win, stats, length, difficulty) => {
   modal = new Modal(win ? "Victory" : "You Lost", content, {});
   document.body.append(modal.elem());
   modal.show();
+=======
+
+const showModal = (win) => {
+  refs.modalWrapper.classList.remove("hidden");
+  // should be able to reuse most of this with some small modifications
+  refs.modalHeader.textContent = win ? "Victory" : "You Lost";
+>>>>>>> Stashed changes
 };
 
 const handleNewGame = (_) => {
@@ -101,6 +109,7 @@ const handleNewGame = (_) => {
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard(); // creates keyboard
 };
+<<<<<<< Updated upstream
 
 const createScoreboard = async () => {
   const data = await getScores(5);
@@ -115,6 +124,13 @@ const createScoreboard = async () => {
 
 createScoreboard();
 
+=======
+console.log(game);
+(async () => {
+  const scores = await getScores(5);
+  scores.forEach(doc => console.log(doc.data()));
+})();
+>>>>>>> Stashed changes
 const handleGameEnd = async (options) => {
   const { win, time, length, word, difficulty, guesses } =
     options;

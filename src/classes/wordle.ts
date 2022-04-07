@@ -38,7 +38,8 @@ export class Wordle {
     // this.guesses = guesses;
     // this.difficulty = difficulty;
     Object.assign(this, options);
-    this.refs = refs;
+    console.log(options);
+    this.refs = refs;;
     if (options.timed) {
       this.timer = new Timer({
         minutesRef: this.refs.timerMinutes,
@@ -140,19 +141,38 @@ export class Wordle {
     }
   }
 
+<<<<<<< Updated upstream:src/classes/wordle.ts
   async handleGuess() {
+=======
+
+ applyShaker() {
+   for (let i = 0; i < this.entry.length; i++) {
+      const box = document.getElementById(
+        `r-${this.entryRow}c-${i}`)
+      box.classList.add("yourElement");
+      setTimeout(()=> box.classList.remove("yourElement"), 1000)
+  }
+};
+
+  handleGuess() {
+>>>>>>> Stashed changes:src/classes/wordle.js
     // handles any time user clicks enter
     const guess = this.entry.join("").toLowerCase();
     if (
       guess.length != this.wordLength ||
+<<<<<<< Updated upstream:src/classes/wordle.ts
       !words[this.wordLength].includes(guess)
     ) {
       if (guess.length == this.wordLength) {
         this.applyShaker();
       }
+=======
+      !words[this.wordLength].includes(guess)) {
+      this.applyShaker()
+>>>>>>> Stashed changes:src/classes/wordle.js
       //word is not long enough or a valid word
       return;
-    }
+    };
     const seenLetters = {}; // {letter: frequency}
     let correctLetters = 0;
     for (let i = 0; i < this.wordLength; i++) {
@@ -195,6 +215,7 @@ export class Wordle {
       }
     }
     this.entry = []; // resets the entry array for the state
+
     if (correctLetters == this.wordLength) {
       // if the user got all of the letters correct
       this.handleGameEnd({
