@@ -118,7 +118,7 @@ const showModal = (
           `The word was ${word}.`
         )
       : ([] as any),
-    win
+    win && time > 0
       ? elem(
           "form",
           null,
@@ -167,7 +167,6 @@ const showModal = (
   modal = new Modal(win ? "Victory" : "You Lost", content);
   document.body.append(modal.elem());
   const nameInput = document.getElementById("modal-name-input");
-  nameInput.focus();
   modal.show();
 };
 
