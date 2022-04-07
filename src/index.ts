@@ -69,7 +69,7 @@ const sbColumns = [
     display: "Name",
     key: "name",
     displayFn(value: string) {
-      return String(value).slice(0, 10);
+      return String(value).slice(0, 12);
     },
   },
   {
@@ -127,6 +127,7 @@ const showModal = (
             class: "modal-name-input",
             id: "modal-name-input",
             placeholder: "Enter your name",
+            maxlength: "12"
           }),
           elem(
             "button",
