@@ -4,7 +4,7 @@ Returns the element with the given tag name and attributes. Appends the given ch
 export default function elem(
   tag: string,
   attrs?:
-    | { [key: string]: string }
+    | { [key: string]: string | Function }
     | Array<HTMLElement>
     | string
     | HTMLElement,
@@ -18,7 +18,7 @@ export default function elem(
     attrs &&
     (Array.isArray(attrs) || typeof attrs === "string")
   ) {
-    console.log("here", attrs)
+    console.log("here", attrs);
     if (typeof attrs === "string") {
       element.innerText = attrs;
     } else {
@@ -27,10 +27,14 @@ export default function elem(
   } else if (attrs) {
     // if attrs exist then loop through them  and set attributes
     Object.keys(attrs).forEach((key) => {
-      try {
-        // idk what is going on here
-        element.setAttribute(key, attrs[key]);
-      } catch (e) {}
+      if (typeof attrs[key] === "function") {
+        element.addEventListener(key, attrs[key]);
+      } else {
+        try {
+          // idk what is going on here
+          element.setAttribute(key, attrs[key]);
+        } catch (e) {}
+      }
     });
   }
   if (children) {

@@ -24,6 +24,7 @@ export const addScore = async (payload: AddScorePayload) => {
   }
 };
 
+
 interface TopScoresPayload {
   length: number;
   count: number;

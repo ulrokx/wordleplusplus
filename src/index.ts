@@ -66,6 +66,13 @@ const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
 const sbColumns = [
   {
+    display: "Name",
+    key: "name",
+    displayFn(value: string) {
+      return String(value).slice(0, 10);
+    },
+  },
+  {
     display: "Word",
     key: "word",
   },
@@ -94,7 +101,8 @@ const showModal = (
   stats: WinModalContentOptions,
   length: number,
   difficulty: number,
-  word: string
+  word: string,
+  time: number
 ) => {
   const graph = generateGuessGraph(
     stats.distribution,
@@ -110,11 +118,52 @@ const showModal = (
           `The word was ${word}.`
         )
       : ([] as any),
+    win
+      ? elem(
+          "form",
+          null,
+          elem("input", {
+            type: "text",
+            class: "modal-name-input",
+            id: "modal-name-input",
+            placeholder: "Enter your name",
+          }),
+          elem(
+            "button",
+            {
+              class: "modal-submit-btn",
+              type: "submit",
+              id: "modal-submit-btn",
+              click: function (e: HTMLElementEventMap["click"]) {
+                e.preventDefault();
+                e.stopPropagation();
+                const inputBox = (e.target as HTMLButtonElement)
+                  .previousSibling as HTMLInputElement;
+                const name = inputBox.value;
+                addScore({
+                  name,
+                  time,
+                  length,
+                  difficulty,
+                  word,
+                });
+                inputBox.parentElement.after(
+                  elem("p", {class: "modal-added"}, "Added to leaderboard!")
+                );
+                inputBox.parentElement.remove();
+              },
+            },
+            "Submit"
+          )
+        )
+      : ([] as any),
     graph,
     generateModalButtons(handleResetGame, handlePlayAgain)
   );
   modal = new Modal(win ? "Victory" : "You Lost", content);
   document.body.append(modal.elem());
+  const nameInput = document.getElementById("modal-name-input");
+  nameInput.focus();
   modal.show();
 };
 
@@ -170,7 +219,8 @@ const createAndAppendScoreboard = async () => {
   const length = Number(refs.sbOptsLength.value);
   await createScoreboard({ length, difficulty: 0 });
 };
-(async () => createAndAppendScoreboard())();
+(async () => await createAndAppendScoreboard())();
+
 const handleGameEnd = async (options) => {
   const { win, time, length, word, difficulty, guesses } =
     options;
@@ -186,11 +236,8 @@ const handleGameEnd = async (options) => {
   if (win) {
     stats.distribution[guesses]++;
   }
-  showModal(win, stats, length, difficulty, word);
+  showModal(win, stats, length, difficulty, word, time);
   setStats(length, difficulty, stats); // set stats in localstorage
-  if (time) {
-    await addScore({ time, length, word, difficulty });
-  }
 };
 
 const handleResetGame = () => {
@@ -199,6 +246,7 @@ const handleResetGame = () => {
   deleteBoard();
   refs.createGameWrapper.classList.remove("hidden"); // shows the create game portion
   refs.timerWrapper.classList.add("hidden"); // hides the timer
+  console.log("here")
 };
 
 refs.startGameButton.addEventListener("click", handleNewGame);

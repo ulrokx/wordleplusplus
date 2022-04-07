@@ -137,6 +137,14 @@ button {
   text-align: center;
 }
 
+.modal-added {
+  text-align: center;
+}
+
+.modal-name-input {
+  font-size: 1.5rem;
+}
+
 .graph-wrapper {
   display: flex;
   flex-direction: column;

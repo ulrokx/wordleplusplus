@@ -7,6 +7,7 @@ interface Column {
   key: string;
   displayFn?: (value: any) => string
 }
+// [{name, time, difficulty, word}, {name, time, difficulty, word}, {name, time, difficulty, word}]
 
 interface ScoreboardOptions {
   hide?: Array<string>;
@@ -25,8 +26,7 @@ export default class Scoreboard {
       console.error("scores array is empty!");
       return;
     }
-    this.table = document.createElement(`table`);
-    this.table.classList.add("scoreboard");
+    this.table = elem("table", { class: "scoreboard" }) as HTMLTableElement
   }
 
   elem() {
