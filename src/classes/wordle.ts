@@ -72,6 +72,7 @@ export class Wordle {
     this.active = true;
     this.isShaking = false;
     document.addEventListener("keydown", this.handleKeyPress); // to prevent errors before game
+    console.log(this.word)
   }
 
   stopTiming() {
