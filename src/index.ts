@@ -127,7 +127,7 @@ const showModal = (
             class: "modal-name-input",
             id: "modal-name-input",
             placeholder: "Enter your name",
-            maxlength: "12"
+            maxlength: "12",
           }),
           elem(
             "button",
@@ -217,11 +217,21 @@ const createScoreboard = async ({
       scores.push(s);
     }
   });
-  const sb = new Scoreboard(scores, {
-    // creates scoreboard
-    columns: sbColumns,
-  }).elem();
-  refs.sbWrapper.append(sb);
+  if (scores.length > 0) {
+    const sb = new Scoreboard(scores, {
+      // creates scoreboard
+      columns: sbColumns,
+    }).elem();
+    refs.sbWrapper.append(sb);
+  } else {
+    refs.sbWrapper.append(
+      elem(
+        "p",
+        null,
+        "There are no scores yet for this word length!"
+      )
+    );
+  }
 };
 const createAndAppendScoreboard = async () => {
   refs.sbWrapper.replaceChildren([] as any);

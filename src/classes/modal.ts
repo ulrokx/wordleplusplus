@@ -19,11 +19,13 @@ export default class Modal {
 
   show() {  // show the modal
     this.modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
     this.modal.focus();
   }
 
   hide() { // hide the modal
     this.modal.classList.add("hidden");
+    document.body.style.overflow = "auto";
     this.modal.remove();
   }
 
