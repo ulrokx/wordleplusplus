@@ -64,15 +64,30 @@ button {
   border: 1px #b8b3be solid;
   margin: 0.125rem;
   touch-action: manipulation;
+  user-select: none;
 }
 /* GAME BOXES */
 #game-wrapper {
   width: min(100%, 500px);
 }
-.game-row {
+.game-row { /* template columns are set in wordle.ts */
   display: grid;
   width: 100%;
   padding: 0;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  gap: .25rem
+}
+
+.game-row-sticky {
+  position: sticky;
+  top: 1rem;
+  z-index: 1;
+  background-color: #f0efe9;
+  border-radius: 5%;
+  height: 6rem;
+  overflow:visible;
 }
 .game-box {
   display: inline-flex;
@@ -80,8 +95,9 @@ button {
   align-items: center;
   font-size: 2rem;
   border-radius: 1rem;
-  margin-inline: 0.125rem;
-  max-width: 5.5rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 4.75rem;
   min-height: 4rem;
   overflow: hidden;
   user-select: none;
@@ -166,6 +182,7 @@ button {
   grid-template-columns: 1fr 1fr;
   grid-gap: 1rem;
   margin-bottom: 1rem;
+  margin-inline: 1.5rem;
 }
 
 .stats-box {

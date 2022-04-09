@@ -21,7 +21,7 @@ export class Wordle {
   refs: any;
   timer: Timer;
   intervalRef: NodeJS.Timer;
-  wordLength: any;
+  wordLength: number;
   difficulty: any;
   difficultyLevels: any;
   word: any;
@@ -32,6 +32,7 @@ export class Wordle {
   active: boolean;
   guesses: number;
   isShaking: boolean;
+  overlay: boolean;
   handleGameEnd: (options: HandleGameEndOptions) => void;
   constructor(options, refs) {
     // creates a wordle game object with the user inputted word length and guesses
@@ -99,9 +100,15 @@ export class Wordle {
     return res;
   }
   createBoard() {
+    if (this.guesses > 6) {
+      this.overlay = true;
+    }
     for (let r = 0; r < this.guesses; r++) {
       const ul = elem("ul", {
-        class: "game-row",
+        class: `game-row ${
+          r === 0 && this.overlay && "game-row-sticky"
+        }`,
+        id: `game-row-${r}`,
         style: `grid-template-columns: repeat(${this.wordLength}, 1fr)`,
       });
       for (let c = 0; c < this.wordLength; c++) {
@@ -127,7 +134,7 @@ export class Wordle {
     }
     if (
       this.entry.length < this.wordLength && // game has space for word
-      e.key.length == 1 && // key is a letter
+      e.key.length === 1 && // key is a letter
       e.key.toUpperCase().charCodeAt(0) >= 65 && // more validation
       e.key.toUpperCase().charCodeAt(0) <= 90
     ) {
@@ -158,6 +165,7 @@ export class Wordle {
   }
 
   async handleGuess() {
+    console.log(this.entryRow, this.guesses);
     // handles any time user clicks enter
     const guess = this.entry.join("").toLowerCase();
     if (
@@ -212,7 +220,7 @@ export class Wordle {
       }
     }
     this.entry = []; // resets the entry array for the state
-    if (correctLetters == this.wordLength) {
+    if (correctLetters === this.wordLength) {
       // if the user got all of the letters correct
       this.handleGameEnd({
         win: true,
@@ -224,7 +232,7 @@ export class Wordle {
       });
       this.active = false;
       this.stopTiming();
-    } else if (this.entryRow + 1 == this.guesses) {
+    } else if (this.entryRow + 1== this.guesses) {
       this.handleGameEnd({
         win: false,
         time: this.timer ? this.timer.getTime() : 0,
@@ -237,7 +245,21 @@ export class Wordle {
       this.stopTiming();
     } else {
       // go to the next row without going over, might be unnecessary
+      const thisRow = document.getElementById(
+        `game-row-${this.entryRow}`
+      );
+      thisRow.classList.remove("game-row-sticky");
+
       this.entryRow = Math.min(this.entryRow + 1, this.guesses);
+      if (this.overlay) {
+        if (this.entryRow < this.guesses) {
+          const nextRow = document.getElementById(
+            `game-row-${this.entryRow}`
+          );
+
+          nextRow.classList.add("game-row-sticky");
+        }
+      }
     }
   }
 
@@ -253,7 +275,7 @@ export class Wordle {
     // updates the keyboard, handles if the key is already green
     if (
       letter in this.letterStatus &&
-      this.letterStatus[letter] == "green"
+      this.letterStatus[letter] === "green"
     )
       return;
     this.letterStatus[letter] = color;
@@ -286,7 +308,8 @@ export class Wordle {
   makeKey(key: string) {
     // factory for each key
     const element = document.createElement("button");
-    const keyId = key == "✓" ? "Enter" : key == "←" ? "Backspace" : key;
+    const keyId =
+      key === "✓" ? "Enter" : key === "←" ? "Backspace" : key;
     element.id = `kb-${keyId}`;
     element.classList.add("kb-key");
     element.textContent = key.toUpperCase(); // below is kinda bad but it works

@@ -26,7 +26,7 @@ export const generateGuessGraph = (
 ): HTMLElement => {
   const canvas = elem("canvas") as HTMLCanvasElement;
   const ctx = canvas.getContext("2d");
-  const width = (canvas.width = 400);
+  const width = (canvas.width = Math.min(document.documentElement.clientWidth-30, 400));
   const height = (canvas.height = Object.keys(dist).length * 50);
   const maxCount = Object.values(dist).reduce(
     (a, b) => Math.max(a, b),
