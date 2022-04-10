@@ -184,8 +184,8 @@ const handleNewGame = () => {
   }
   game = new Wordle(
     {
-      wordLength,
-      guesses,
+      wordLength:parseInt(wordLength, 10),
+      guesses: parseInt(guesses, 10),
       difficulty,
       timed,
       difficultyLevels: DIFFICULTY_LEVELS,

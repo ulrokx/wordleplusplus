@@ -220,6 +220,7 @@ export class Wordle {
       }
     }
     this.entry = []; // resets the entry array for the state
+    console.log(typeof correctLetters, typeof this.wordLength);
     if (correctLetters === this.wordLength) {
       // if the user got all of the letters correct
       this.handleGameEnd({
@@ -232,7 +233,7 @@ export class Wordle {
       });
       this.active = false;
       this.stopTiming();
-    } else if (this.entryRow + 1== this.guesses) {
+    } else if (this.entryRow + 1 === this.guesses) {
       this.handleGameEnd({
         win: false,
         time: this.timer ? this.timer.getTime() : 0,
