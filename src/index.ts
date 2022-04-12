@@ -163,7 +163,7 @@ const showModal = (
         )
       : ([] as any),
     graph,
-    generateModalButtons(handleResetGame, handlePlayAgain)
+    generateModalButtons()
   );
   modal = new Modal(win ? "Victory" : "You Lost", content);
   document.body.append(modal.elem());
@@ -265,6 +265,13 @@ const handleResetGame = () => {
   refs.createGameWrapper.classList.remove("hidden"); // shows the create game portion
   refs.timerWrapper.classList.add("hidden"); // hides the timer
 };
+  document.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).id === "modal-again") {
+      handlePlayAgain();
+    } else if ((e.target as HTMLElement).id === "modal-new") {
+      handleResetGame();
+    }
+  });
 
 refs.startGameButton.addEventListener("click", handleNewGame);
 refs.sbOptsLength.addEventListener(

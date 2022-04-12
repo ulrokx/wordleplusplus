@@ -26,6 +26,7 @@ export default class Timer {
   }
 
   stop() {
+    console.log(this);
     if (!this.isRunning) {
       console.error("timer is already stopped");
     }
@@ -58,6 +59,9 @@ export default class Timer {
       !this.milliRef.textContent
     ) {
       console.error("elements not provided");
+    }
+    if (!this.isRunning) {
+      return;
     }
     const time = this.getTime();
     const { milli, seconds, minutes } = msToReadable(time);

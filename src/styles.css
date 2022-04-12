@@ -246,6 +246,7 @@ button {
   border-radius: 1rem;
   height: var(--kb-btn-height);
   padding-inline: .1rem;
+  user-select: none;
 }
 
 button:hover {

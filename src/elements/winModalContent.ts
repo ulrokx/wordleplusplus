@@ -39,16 +39,7 @@ export default function generateWinContent(
 }
 
 export function generateModalButtons(
-  newGame: () => void,
-  again: () => void
 ): HTMLElement {
-  document.addEventListener("click", (e) => {
-    if ((e.target as HTMLElement).id === "modal-again") {
-      again();
-    } else if ((e.target as HTMLElement).id === "modal-new") {
-      newGame();
-    }
-  });
   return elem("div", { class: "modal-buttons" }, [
     elem("button", { id: "modal-again" }, ["Play Again"]),
     elem("button", { id: "modal-new" }, ["New Game"]),

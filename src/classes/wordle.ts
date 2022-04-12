@@ -78,13 +78,13 @@ export class Wordle {
     this.active = true;
     this.isShaking = false;
     document.addEventListener("keydown", this.handleKeyPress); // to prevent errors before game
-    console.log(this.word);
+    // console.log(this.word);
   }
 
   stopTiming() {
-    if (this.timer && this.intervalRef) {
+    if (this.timer) {
       this.timer.stop();
-      clearInterval(this.intervalRef);
+      if (this.intervalRef) clearInterval(this.intervalRef);
     }
   }
   generateFreq(word) {
@@ -165,7 +165,6 @@ export class Wordle {
   }
 
   async handleGuess() {
-    console.log(this.entryRow, this.guesses);
     // handles any time user clicks enter
     const guess = this.entry.join("").toLowerCase();
     if (
@@ -220,9 +219,10 @@ export class Wordle {
       }
     }
     this.entry = []; // resets the entry array for the state
-    console.log(typeof correctLetters, typeof this.wordLength);
     if (correctLetters === this.wordLength) {
       // if the user got all of the letters correct
+      this.active = false;
+      this.stopTiming();
       this.handleGameEnd({
         win: true,
         time: this.timer ? this.timer.getTime() : 0,
@@ -231,9 +231,9 @@ export class Wordle {
         difficulty: this.difficulty,
         guesses: this.entryRow + 1,
       });
+    } else if (this.entryRow + 1 === this.guesses) {
       this.active = false;
       this.stopTiming();
-    } else if (this.entryRow + 1 === this.guesses) {
       this.handleGameEnd({
         win: false,
         time: this.timer ? this.timer.getTime() : 0,
@@ -242,8 +242,6 @@ export class Wordle {
         difficulty: this.difficulty,
         guesses: this.entryRow,
       });
-      this.active = false;
-      this.stopTiming();
     } else {
       // go to the next row without going over, might be unnecessary
       const thisRow = document.getElementById(
