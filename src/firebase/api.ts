@@ -32,6 +32,5 @@ export const getTopScores = async (payload: TopScoresPayload) => {
   const ref = collection(db, `scores-${payload.length}`);
   const q = query(ref, orderBy("time", "asc"), limit(payload.count), where("time", "!=", 0))
   const data = await getDocs(q)
-  console.log(data.docs)
   return data.docs
 }
