@@ -3,6 +3,7 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 :root {
   /* GLOBAL COLOR VARIABLES */
   --light-grey: #d3d0cb;
@@ -18,6 +19,7 @@ ul,
 ol {
   list-style: none;
 }
+
 /* CREATE GAME */
 #container {
   display: flex;
@@ -44,7 +46,7 @@ ol {
   row-gap: 0.5rem;
 }
 
-#create-game-ul > * {
+#create-game-ul>* {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -66,10 +68,12 @@ button {
   touch-action: manipulation;
   user-select: none;
 }
+
 /* GAME BOXES */
 #game-wrapper {
   width: min(100%, 500px);
 }
+
 .game-row {
   /* template columns are set in wordle.ts */
   display: grid;
@@ -90,6 +94,7 @@ button {
   height: 6rem;
   overflow: visible;
 }
+
 .game-box {
   display: inline-flex;
   justify-content: center;
@@ -104,7 +109,7 @@ button {
   overflow: hidden;
   user-select: none;
 }
- 
+
 .game-box-letter {
   width: 100%;
   height: 100%;
@@ -125,6 +130,7 @@ button {
 .game-box-grey {
   background-color: var(--dark-grey) !important;
 }
+
 /* MODAL */
 .modal {
   position: fixed;
@@ -150,7 +156,7 @@ button {
   border-radius: 1rem;
 }
 
-.modal-content > header {
+.modal-content>header {
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
@@ -173,12 +179,15 @@ button {
   justify-content: center;
   align-items: center;
 }
+
 .dist-title {
   margin: 0;
 }
+
 .dist-type {
   margin: 0 0 0.25rem 0;
 }
+
 .stats-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -207,6 +216,7 @@ button {
   font-size: 1rem;
   font-weight: 500;
 }
+
 .modal-buttons {
   display: flex;
   flex-direction: row;
@@ -214,16 +224,19 @@ button {
   align-items: center;
   margin-top: 1rem;
 }
+
 /* KEYBOARD */
 /* i think this is the most elegant way to do this, it works */
 #kb-wrapper {
   overflow: hidden;
   width: min(100%, 600px);
 }
-#kb-wrapper > * {
+
+#kb-wrapper>* {
   gap: 0.25rem;
   padding: 0.1rem;
 }
+
 .kb-row-0 {
   display: grid;
   grid-template-columns: repeat(10, 1fr) 1fr;
@@ -266,7 +279,7 @@ button:hover {
   user-select: none;
 }
 
-#timer > * {
+#timer>* {
   display: inline;
   user-select: none;
 }
@@ -283,7 +296,9 @@ th {
 .shake-effect {
   animation: shake infinite 1s linear;
 }
+
 @keyframes shake {
+
   10%,
   90% {
     transform: translate3d(-1px, 0, 0);
@@ -306,26 +321,37 @@ th {
   }
 }
 
-
-
 .gradient-wrapper {
-    background: linear-gradient(90deg,#F17C58, #E94584, #24AADB , #27DBB1,#FFDC18, #FF3706);
-    background-size: 600% 100%;
-    animation: gradient 25s linear infinite;
-    animation-direction: alternate;
+  background: linear-gradient(90deg,
+      #f17c58,
+      #e94584,
+      #24aadb,
+      #27dbb1,
+      #ffdc18,
+      #ff3706);
+  background-size: 600% 100%;
+  animation: gradient 25s linear infinite;
+  animation-direction: alternate;
 }
+
 @keyframes gradient {
-    0% {background-position: 0%}
-    100% {background-position: 100%}
+  0% {
+    background-position: 0%;
+  }
+
+  100% {
+    background-position: 100%;
+  }
 }
 
 /* credits */
 #credits {
   bottom: 0;
   position: fixed;
-    text-align: center;
-    width: 100%;
+  text-align: center;
+  width: 100%;
 }
+
 /* make a footer work on mobile*/
 @media screen and (max-height: 900px) {
   #credits {

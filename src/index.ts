@@ -61,8 +61,11 @@ const refs = {
   sbOptsLength: document.getElementById(
     "scoreboard-length-select"
   ) as HTMLInputElement,
+  sbOptsDiff: document.getElementById(
+    "scoreboard-difficulty-select"
+  ) as HTMLInputElement,
   sbWrapper: document.getElementById("scoreboard-wrapper"),
-  credits: document.getElementById("credits")
+  credits: document.getElementById("credits"),
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
@@ -185,7 +188,7 @@ const handleNewGame = () => {
   }
   game = new Wordle(
     {
-      wordLength:parseInt(wordLength, 10),
+      wordLength: parseInt(wordLength, 10),
       guesses: parseInt(guesses, 10),
       difficulty,
       timed,
@@ -196,7 +199,7 @@ const handleNewGame = () => {
     refs
   ); // creates a new game with the user inputted length and guesses
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
-  refs.credits.classList.add("hidden")
+  refs.credits.classList.add("hidden");
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard(); // creates keyboard
 };
@@ -209,14 +212,20 @@ const createScoreboard = async ({
   difficulty: number;
 }) => {
   const data = await getTopScores({
-    count: 10,
+    count: 100,
     length,
   });
   const scores = [];
+  console.log(data)
   data.forEach((d) => {
     const s = d.data();
-    if (s.time > 0) {
-      scores.push(s);
+    console.log(s)
+    if (s.time > 0 && scores.length < 10) {
+      if(difficulty == -1) {
+        scores.push(s)
+      } else if(Number(difficulty) == Number(s.difficulty)) {
+        scores.push(s)
+      }
     }
   });
   if (scores.length > 0) {
@@ -238,7 +247,9 @@ const createScoreboard = async ({
 const createAndAppendScoreboard = async () => {
   refs.sbWrapper.replaceChildren([] as any);
   const length = Number(refs.sbOptsLength.value);
-  await createScoreboard({ length, difficulty: 0 });
+  const difficulty = Number(refs.sbOptsDiff.value);
+  console.log(difficulty)
+  await createScoreboard({ length, difficulty });
 };
 (async () => await createAndAppendScoreboard())();
 const handleGameEnd = async (options) => {
@@ -267,24 +278,27 @@ const handleResetGame = () => {
   createAndAppendScoreboard();
   refs.createGameWrapper.classList.remove("hidden"); // shows the create game portion
   refs.timerWrapper.classList.add("hidden"); // hides the timer
-  refs.credits.classList.remove("hidden")
+  refs.credits.classList.remove("hidden");
 };
-  document.addEventListener("click", (e) => {
-    if ((e.target as HTMLElement).id === "modal-again") {
-      handlePlayAgain();
-    } else if ((e.target as HTMLElement).id === "modal-new") {
-      handleResetGame();
-    }
-  });
+document.addEventListener("click", (e) => {
+  if ((e.target as HTMLElement).id === "modal-again") {
+    handlePlayAgain();
+  } else if ((e.target as HTMLElement).id === "modal-new") {
+    handleResetGame();
+  }
+});
 
 refs.startGameButton.addEventListener("click", handleNewGame);
 refs.sbOptsLength.addEventListener(
   "change",
   createAndAppendScoreboard
 );
+refs.sbOptsDiff.addEventListener("change", () => {
+  createAndAppendScoreboard();
+});
 
 const applyGradient = () => {
-  document.body.classList.toggle("gradient-wrapper") 
+  document.body.classList.toggle("gradient-wrapper");
 };
 refs.gradientSelect.addEventListener("change", applyGradient);
 const handlePlayAgain = () => {

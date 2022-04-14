@@ -35,7 +35,7 @@
     />
     <link rel="manifest" href="/site.webmanifest" />
   </head>
-  <body class ="gradient-wrapper">
+  <body class="gradient-wrapper">
     <div id="container">
       <h1 id="wordle-title">Wordle++</h1>
       <div id="create-game-wrapper">
@@ -107,6 +107,19 @@
               <option value="6">6</option>
               <option value="7">7</option>
             </select>
+            <select
+              name="scoreboard-difficulty-select"
+              id="scoreboard-difficulty-select"
+            >
+              <option value="-1">All</option>
+              <option value="0">Very Easy</option>
+              <option value="1">Easy</option>
+              <option value="2">Less Easy</option>
+              <option value="3">Moderate</option>
+              <option value="4">More Difficutl</option>
+              <option value="5">Most Difficult</option>
+              <option value="6">Impossible</option>
+            </select>
           </label>
         </div>
         <div id="scoreboard-wrapper"></div>
@@ -122,7 +135,10 @@
       <pre id="t-milli">000</pre>
     </div>
     <div id="credits">
-      <p>made by Richard Kirk, Jeffrey Fitzsimmons, Tyler Reinert, and Mateusz Marciniak</p>
+      <p>
+        made by Richard Kirk, Jeffrey Fitzsimmons, Tyler Reinert,
+        and Mateusz Marciniak
+      </p>
     </div>
   </body>
 </html>
