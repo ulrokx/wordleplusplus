@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import { db } from "./firebase";
 interface AddScorePayload {
   length: number;
@@ -30,7 +30,8 @@ interface TopScoresPayload {
 }
 export const getTopScores = async (payload: TopScoresPayload) => {
   const ref = collection(db, `scores-${payload.length}`);
-  const q = query(ref, orderBy("time", "asc"), limit(payload.count))
+  const q = query(ref, orderBy("time", "asc"), limit(payload.count), where("time", "!=", 0))
   const data = await getDocs(q)
+  console.log(data.docs)
   return data.docs
 }

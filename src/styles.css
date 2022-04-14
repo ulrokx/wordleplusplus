@@ -303,3 +303,12 @@ th {
     transform: translate3d(4px, 0, 0);
   }
 }
+
+/* credits */
+
+#credits {
+  position: fixed;
+  bottom: 0;
+  text-align: center;
+  width: 100%;
+}
