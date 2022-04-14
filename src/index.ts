@@ -45,6 +45,7 @@ const refs = {
   guessesSelect: document.getElementById("guesses-select"),
   difficultySelect: document.getElementById("difficulty-select"),
   timedSelect: document.getElementById("timed-select"),
+  gradientSelect: document.getElementById("gradient-select"),
   gameWrapper: document.getElementById("game-wrapper"),
   modalContent: document.getElementById("modal-content"),
   modalWrapper: document.getElementById("modal-wrapper"),
@@ -278,6 +279,11 @@ refs.sbOptsLength.addEventListener(
   "change",
   createAndAppendScoreboard
 );
+
+const applyGradient = () => {
+  document.body.classList.toggle("gradient-wrapper") 
+};
+refs.gradientSelect.addEventListener("change", applyGradient);
 const handlePlayAgain = () => {
   modal.hide();
   deleteBoard();
