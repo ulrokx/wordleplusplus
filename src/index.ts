@@ -216,15 +216,13 @@ const createScoreboard = async ({
     length,
   });
   const scores = [];
-  console.log(data)
   data.forEach((d) => {
     const s = d.data();
-    console.log(s)
     if (s.time > 0 && scores.length < 10) {
-      if(difficulty == -1) {
-        scores.push(s)
-      } else if(Number(difficulty) == Number(s.difficulty)) {
-        scores.push(s)
+      if (difficulty == -1) {
+        scores.push(s);
+      } else if (Number(difficulty) == Number(s.difficulty)) {
+        scores.push(s);
       }
     }
   });
@@ -248,7 +246,6 @@ const createAndAppendScoreboard = async () => {
   refs.sbWrapper.replaceChildren([] as any);
   const length = Number(refs.sbOptsLength.value);
   const difficulty = Number(refs.sbOptsDiff.value);
-  console.log(difficulty)
   await createScoreboard({ length, difficulty });
 };
 (async () => await createAndAppendScoreboard())();
@@ -298,8 +295,21 @@ refs.sbOptsDiff.addEventListener("change", () => {
 });
 
 const applyGradient = () => {
+  if (document.body.classList.contains("gradient-wrapper")) {
+    localStorage.setItem("gradient", "false");
+  } else {
+    localStorage.setItem("gradient", "true");
+  }
   document.body.classList.toggle("gradient-wrapper");
 };
+(() => {
+  if (localStorage.getItem("gradient") === "true") {
+    document.body.classList.add("gradient-wrapper");
+  (refs.gradientSelect as HTMLInputElement).checked = true;
+  } else {
+    document.body.classList.remove("gradient-wrapper")
+  }
+})();
 refs.gradientSelect.addEventListener("change", applyGradient);
 const handlePlayAgain = () => {
   modal.hide();
