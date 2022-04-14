@@ -26,7 +26,6 @@ export default class Timer {
   }
 
   stop() {
-    console.log(this);
     if (!this.isRunning) {
       console.error("timer is already stopped");
     }

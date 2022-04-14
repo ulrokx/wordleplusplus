@@ -62,6 +62,7 @@ const refs = {
     "scoreboard-length-select"
   ) as HTMLInputElement,
   sbWrapper: document.getElementById("scoreboard-wrapper"),
+  credits: document.getElementById("credits")
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
@@ -168,7 +169,6 @@ const showModal = (
   );
   modal = new Modal(win ? "Victory" : "You Lost", content);
   document.body.append(modal.elem());
-  const nameInput = document.getElementById("modal-name-input");
   modal.show();
 };
 
@@ -196,6 +196,7 @@ const handleNewGame = () => {
     refs
   ); // creates a new game with the user inputted length and guesses
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
+  refs.credits.classList.add("hidden")
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard(); // creates keyboard
 };
@@ -263,8 +264,10 @@ const handleResetGame = () => {
   // resets the game
   modal.hide(); // hides the modal
   deleteBoard();
+  createAndAppendScoreboard();
   refs.createGameWrapper.classList.remove("hidden"); // shows the create game portion
   refs.timerWrapper.classList.add("hidden"); // hides the timer
+  refs.credits.classList.remove("hidden")
 };
   document.addEventListener("click", (e) => {
     if ((e.target as HTMLElement).id === "modal-again") {
