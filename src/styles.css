@@ -8,7 +8,7 @@ body {
   --light-grey: #d3d0cb;
   --light-green: #8ff7a7;
   --light-yellow: #fcdc4d;
-  --dark-grey: #b8b3be;
+  --dark-grey: #77747a9d;
   /* KEYBOARD VARIABLES */
   --kb-btn-height: 3rem;
   --kb-btn-width: 4rem;
@@ -98,12 +98,13 @@ button {
   border-radius: 1rem;
   box-sizing: border-box;
   width: 100%;
+  border: solid black 1px;
   max-width: 4.75rem;
   min-height: 4rem;
   overflow: hidden;
   user-select: none;
 }
-
+ 
 .game-box-letter {
   width: 100%;
   height: 100%;
@@ -303,6 +304,19 @@ th {
   60% {
     transform: translate3d(4px, 0, 0);
   }
+}
+
+
+
+.gradient-wrapper {
+    background: linear-gradient(90deg,#F17C58, #E94584, #24AADB , #27DBB1,#FFDC18, #FF3706);
+    background-size: 600% 100%;
+    animation: gradient 25s linear infinite;
+    animation-direction: alternate;
+}
+@keyframes gradient {
+    0% {background-position: 0%}
+    100% {background-position: 100%}
 }
 
 /* credits */
