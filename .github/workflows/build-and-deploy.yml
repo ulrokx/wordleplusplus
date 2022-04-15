@@ -1,25 +1,28 @@
 name: build-and-deploy
 on:
   push:
-    branches:
-      - 'master'
+    branches: [ master ]
+
 jobs:
   build-and-deploy:
+    name: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
-      - with:
+      - name: checkout and setup node
+        uses: actions/checkout@v2
+        uses: actions/setup-node@v3
+        with:
           node-version: '14'
-      - run: yarn build
+        run: yarn build
+
       - name: deploy
-      - uses: nwtgck/actions-netlify@v1.2
-      - with:
+        uses: nwtgck/actions-netlify@v1.2
+        with:
           publish-dir: './dist'
           production-branch: master
           # github-token: ${{ secrets.GITHUB_TOKEN }}
-      - env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        timeout-minutes: 1
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+    timeout-minutes: 1
         
