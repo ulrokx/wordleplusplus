@@ -12,7 +12,7 @@
     <script type="module" src="index.ts"></script>
     <meta
       name="apple-mobile-web-app-status-bar-style"
-      content="default"
+      content="black-translucent"
     />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -36,11 +36,13 @@
     <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
+    <button id="back-btn" class="hidden">&larr;</button>
     <div id="container">
       <h1 id="wordle-title">Wordle++</h1>
       <div id="create-game-wrapper">
         <h2>Create New Game</h2>
-        <ul id="create-game-ul">
+        <div id="create-game-ul">
+          <button id="open-help-btn">How to Play</button>
           <label>
             <span>Word Length</span>
             <select name="length" id="word-length-select">
@@ -85,16 +87,13 @@
           </label>
           <label>
             <span>Colored</span>
-            <input
-              type="checkbox"
-              id="gradient-select"
-            />
+            <input type="checkbox" id="gradient-select" />
           </label>
-        </ul>
+        </div>
         <button id="start-game-btn">Start New Game</button>
         <div id="scoreboard-options-wrapper">
-          <label>
-            <span>Scoreboard for Word Length</span>
+          <span>Scoreboard for Word Length and Difficulty</span>
+          <div id="scoreboard-options-subwrapper">
             <select
               name="scoreboard-length-select"
               id="scoreboard-length-select"
@@ -118,7 +117,7 @@
               <option value="5">Most Difficult</option>
               <option value="6">Impossible</option>
             </select>
-          </label>
+          </div>
         </div>
         <div id="scoreboard-wrapper"></div>
       </div>

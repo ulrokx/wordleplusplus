@@ -21,10 +21,12 @@ store streak and guesses in localstorage
 import Modal from "./classes/modal";
 import Scoreboard from "./classes/scoreboard";
 import { Wordle } from "./classes/wordle";
+import { genBackBtnContent } from "./elements/genBackBtnContent";
 import {
   DifficultyEnum,
   generateGuessGraph,
 } from "./elements/guessGraph";
+import { genHelpContent } from "./elements/helpContent";
 import generateWinContent, {
   generateModalButtons,
   WinModalContentOptions,
@@ -46,6 +48,9 @@ const refs = {
   difficultySelect: document.getElementById("difficulty-select"),
   timedSelect: document.getElementById("timed-select"),
   gradientSelect: document.getElementById("gradient-select"),
+  helpBtn: document.getElementById(
+    "open-help-btn"
+  ) as HTMLInputElement,
   gameWrapper: document.getElementById("game-wrapper"),
   modalContent: document.getElementById("modal-content"),
   modalWrapper: document.getElementById("modal-wrapper"),
@@ -66,6 +71,7 @@ const refs = {
   ) as HTMLInputElement,
   sbWrapper: document.getElementById("scoreboard-wrapper"),
   credits: document.getElementById("credits"),
+  backBtn: document.getElementById("back-btn"),
 };
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
@@ -170,8 +176,10 @@ const showModal = (
     graph,
     generateModalButtons()
   );
-  modal = new Modal(win ? "Victory" : "You Lost", content);
-  document.body.append(modal.elem());
+  modal = new Modal({
+    title: win ? "Victory" : "You Lost",
+    content,
+  });
   modal.show();
 };
 
@@ -200,6 +208,7 @@ const handleNewGame = () => {
   ); // creates a new game with the user inputted length and guesses
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
   refs.credits.classList.add("hidden");
+  refs.backBtn.classList.remove("hidden");
   game.createBoard(); //runs method to generate game tiles per length and guesses
   game.makeKeyboard(); // creates keyboard
 };
@@ -270,12 +279,15 @@ const handleGameEnd = async (options) => {
 
 const handleResetGame = () => {
   // resets the game
-  modal.hide(); // hides the modal
+  if (modal) {
+    modal.hide(); // hides the modal
+  }
   deleteBoard();
   createAndAppendScoreboard();
   refs.createGameWrapper.classList.remove("hidden"); // shows the create game portion
   refs.timerWrapper.classList.add("hidden"); // hides the timer
   refs.credits.classList.remove("hidden");
+  refs.backBtn.classList.add("hidden");
 };
 document.addEventListener("click", (e) => {
   if ((e.target as HTMLElement).id === "modal-again") {
@@ -293,6 +305,33 @@ refs.sbOptsLength.addEventListener(
 refs.sbOptsDiff.addEventListener("change", () => {
   createAndAppendScoreboard();
 });
+refs.helpBtn.addEventListener("click", () => {
+  const helpModal = new Modal({
+    title: "How to Play",
+    content: genHelpContent(),
+    clickToClose: true,
+  });
+  helpModal.show();
+});
+
+refs.backBtn.addEventListener("click", () => {
+  const backModal = new Modal({
+    title: "Are you sure?",
+    content: genBackBtnContent(),
+    clickToClose: true,
+  });
+  backModal.show();
+  backModal.elem().addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).id === "confirm-back-btn") {
+      handleResetGame();
+      backModal.hide();
+      game.stopTiming();
+    }
+    else if((e.target as HTMLElement).id === "cancel-back-btn"){
+      backModal.hide();
+    }
+  });
+});
 
 const applyGradient = () => {
   if (document.body.classList.contains("gradient-wrapper")) {
@@ -305,9 +344,9 @@ const applyGradient = () => {
 (() => {
   if (localStorage.getItem("gradient") === "true") {
     document.body.classList.add("gradient-wrapper");
-  (refs.gradientSelect as HTMLInputElement).checked = true;
+    (refs.gradientSelect as HTMLInputElement).checked = true;
   } else {
-    document.body.classList.remove("gradient-wrapper")
+    document.body.classList.remove("gradient-wrapper");
   }
 })();
 refs.gradientSelect.addEventListener("change", applyGradient);
