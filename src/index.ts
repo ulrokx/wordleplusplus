@@ -334,19 +334,19 @@ refs.backBtn.addEventListener("click", () => {
 });
 
 const applyGradient = () => {
-  if (document.body.classList.contains("gradient-wrapper")) {
+  if (document.documentElement.classList.contains("gradient-wrapper")) {
     localStorage.setItem("gradient", "false");
   } else {
     localStorage.setItem("gradient", "true");
   }
-  document.body.classList.toggle("gradient-wrapper");
+  document.documentElement.classList.toggle("gradient-wrapper");
 };
 (() => {
   if (localStorage.getItem("gradient") === "true") {
-    document.body.classList.add("gradient-wrapper");
+    document.documentElement.classList.add("gradient-wrapper");
     (refs.gradientSelect as HTMLInputElement).checked = true;
   } else {
-    document.body.classList.remove("gradient-wrapper");
+    document.documentElement.classList.remove("gradient-wrapper");
   }
 })();
 refs.gradientSelect.addEventListener("change", applyGradient);

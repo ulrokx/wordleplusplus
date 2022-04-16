@@ -75,6 +75,7 @@ button {
   touch-action: manipulation;
   margin-bottom: .5rem;
   width: min(100%, 80vw);
+  color: #000;
 }
 
 /* GAME BOXES */
