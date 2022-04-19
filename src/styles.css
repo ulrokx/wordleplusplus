@@ -379,7 +379,7 @@ th {
 }
 
 #back-btn {
-  position:absolute;
+  position: absolute;
   top: 4px;
   left: 4px;
   width: fit-content !important;

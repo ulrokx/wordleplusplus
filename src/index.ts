@@ -35,44 +35,10 @@ import { addScore, getTopScores } from "./firebase/api";
 import elem from "./util/element";
 import { getStats, setStats } from "./util/localStats";
 import msToReadable from "./util/msToReadable";
-const refs = {
-  // this is better than a bunch of global variables with long names + intellisense
-  startGameButton: document.getElementById("start-game-btn"),
-  createGameWrapper: document.getElementById(
-    "create-game-wrapper"
-  ),
-  wordLengthSelect: document.getElementById(
-    "word-length-select"
-  ),
-  guessesSelect: document.getElementById("guesses-select"),
-  difficultySelect: document.getElementById("difficulty-select"),
-  timedSelect: document.getElementById("timed-select"),
-  gradientSelect: document.getElementById("gradient-select"),
-  helpBtn: document.getElementById(
-    "open-help-btn"
-  ) as HTMLInputElement,
-  gameWrapper: document.getElementById("game-wrapper"),
-  modalContent: document.getElementById("modal-content"),
-  modalWrapper: document.getElementById("modal-wrapper"),
-  modalHeader: document.getElementById("modal-title"),
-  modalAgain: document.getElementById("modal-again"),
-  modalNew: document.getElementById("modal-new"),
-  keyboardWrapper: document.getElementById("kb-wrapper"),
-  timerWrapper: document.getElementById("timer"),
-  timerMinutes: document.getElementById("t-minute"),
-  timerSeconds: document.getElementById("t-second"),
-  timerMilli: document.getElementById("t-milli"),
-  sbOpts: document.getElementById("scoreboard-options-wrapper"),
-  sbOptsLength: document.getElementById(
-    "scoreboard-length-select"
-  ) as HTMLInputElement,
-  sbOptsDiff: document.getElementById(
-    "scoreboard-difficulty-select"
-  ) as HTMLInputElement,
-  sbWrapper: document.getElementById("scoreboard-wrapper"),
-  credits: document.getElementById("credits"),
-  backBtn: document.getElementById("back-btn"),
-};
+import { refs } from "./util/refs";
+import { analytics } from "./firebase/firebase";
+import { logEvent } from "firebase/analytics";
+logEvent(analytics, "page_view");
 const DIFFICULTY_LEVELS = 7; // total number of difficulty levels
 let game;
 const sbColumns = [
@@ -130,7 +96,7 @@ const showModal = (
         )
       : ([] as any),
     win && time > 0
-      ? elem(
+      ? elem( // name input field for scoreboard if game was timed
           "form",
           null,
           elem("input", {
@@ -206,6 +172,12 @@ const handleNewGame = () => {
     },
     refs
   ); // creates a new game with the user inputted length and guesses
+  logEvent(analytics, "new_game", {
+    length: parseInt(wordLength, 10),
+    guesses: parseInt(guesses, 10),
+    difficulty,
+    timed,
+  });
   refs.createGameWrapper.classList.add("hidden"); // hides the create game portion
   refs.credits.classList.add("hidden");
   refs.backBtn.classList.remove("hidden");
@@ -326,15 +298,21 @@ refs.backBtn.addEventListener("click", () => {
       handleResetGame();
       backModal.hide();
       game.stopTiming();
-    }
-    else if((e.target as HTMLElement).id === "cancel-back-btn"){
+    } else if (
+      (e.target as HTMLElement).id === "cancel-back-btn"
+    ) {
       backModal.hide();
     }
   });
 });
 
 const applyGradient = () => {
-  if (document.documentElement.classList.contains("gradient-wrapper")) {
+  logEvent(analytics, "apply_gradient");
+  if (
+    document.documentElement.classList.contains(
+      "gradient-wrapper"
+    )
+  ) {
     localStorage.setItem("gradient", "false");
   } else {
     localStorage.setItem("gradient", "true");
@@ -346,7 +324,9 @@ const applyGradient = () => {
     document.documentElement.classList.add("gradient-wrapper");
     (refs.gradientSelect as HTMLInputElement).checked = true;
   } else {
-    document.documentElement.classList.remove("gradient-wrapper");
+    document.documentElement.classList.remove(
+      "gradient-wrapper"
+    );
   }
 })();
 refs.gradientSelect.addEventListener("change", applyGradient);

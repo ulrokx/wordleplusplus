@@ -42,14 +42,14 @@ export const generateGuessGraph = (
     const barWidth =
       (dist[guess] / maxCount) * width - textWidth - 10;
     const guessNum = parseInt(guess) - 1;
-    ctx.fillRect(
+    ctx.fillRect( // guess bar
       25,
       guessNum * 50,
       clamp(barWidth, 3, width - 25 - textWidth),
       30
     );
     ctx.fillStyle = "black";
-    ctx.fillText(
+    ctx.fillText( // guess count
       String(dist[guess]),
       clamp(
         width * (dist[guess] / maxCount) + textWidth,
